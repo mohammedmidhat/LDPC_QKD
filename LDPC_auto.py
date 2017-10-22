@@ -9,3 +9,8 @@ def memory_fetcher(circ_size, row_w, col_w, data_wdth, addr_wdth, n, m, fix_pnt_
     check_offset = cir_size
     num_addrs = 2*circ_size
     addr_wdth = 
+
+def vr(col_w, data_wdth):
+    vr_str = ''
+
+    return vr_str
