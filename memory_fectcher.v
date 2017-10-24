@@ -1,3 +1,25 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 		MIT Quantum Photonics Group
+// Engineer: 		Mohammed Al Ai Baky
+// 
+// Create Date:    	10/22/2017 
+// Design Name: 	LDPC_QKD
+// Module Name:    	memory_fetcher
+// Project Name: 	LDPC_QKD
+// Target Devices: 	VC707 Virtex-7 FPGA
+// Tool versions: 	Vivado 14.4
+// Description: 	reads and writes to different BRAMs depending on control signals
+//					from the control unit
+//
+// Dependencies: 	
+//
+// Revision: 
+// Revision 0.0
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+// BRAM Architecture
 
 // Message RAM
 // Belief vr1	|vr -> ch1

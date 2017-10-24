@@ -1,3 +1,23 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 		MIT Quantum Photonics Group
+// Engineer: 		Mohammed Al Ai Baky
+// 
+// Create Date:    	10/22/2017 
+// Design Name: 	LDPC_QKD
+// Module Name:    	control
+// Project Name: 	LDPC_QKD
+// Target Devices: 	VC707 Virtex-7 FPGA
+// Tool versions: 	Vivado 14.4
+// Description: 	controls the flow of the belief propagation decoding algorithm
+//
+// Dependencies: 	
+//
+// Revision: 
+// Revision 0.0
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+
 module control#(parameter max_iter = 30, parameter LOG2max_iter = 5, parameter CIRC_SIZE = 3, parameter LOG2CIRC_SIZE = 2, parameter n = 18)(
 	// Message RAM
 	input [ADDR_WIDTH-1:0] mf_addr_0,
