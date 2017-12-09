@@ -3,15 +3,15 @@ import math
 
 
 ## file must end with "\n"
-f = open("204.33.484.txt")
+f = open("small_code.txt")
 
 
 skip_lines = 4
 for i in range(skip_lines):
 	f.readline()
 	
-n = 204
-m = 102
+n = 12
+m = 6
 deg_v = 3
 deg_c = 6
 col_format_spec = '#0' + str(int(math.ceil(math.log(m)/math.log(2)))+2) + 'b'
@@ -31,15 +31,19 @@ d_var_neighbors = {}
 
 for i in range(n):
         line = f.readline()
-        line = line.split('\t')
+        #line = line.split('\t')
+        line = line.split(' ')
         ## to get rid of "\n"
-        line[len(line)-1] = line[len(line)-1][:-1]
+        #line[len(line)-1] = line[len(line)-1][:-1]
+        line = line[:len(line)-1]
         d_var_neighbors[str(i+1)] = line
 for i in range(m):
         line = f.readline()
-        line = line.split('\t')
+        #line = line.split('\t')
+        line = line.split(' ')
         ## to get rid of "\n"
-        line[len(line)-1] = line[len(line)-1][:-1]
+        #line[len(line)-1] = line[len(line)-1][:-1]
+        line = line[:len(line)-1]
         d_ch_neighbors[str(i+1)] = line
 
 

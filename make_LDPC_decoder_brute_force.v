@@ -2,8 +2,8 @@ module decoder#(parameter n = 204, parameter m = 102, parameter log2n = 8, param
 				parameter INT = 8, parameter FRAC = 8, parameter deg_v = 3, parameter deg_c = 6, parameter log2deg_v = 2, parameter log2deg_c = 3)(
 	input clk,
 	input rst,
-	output [log2max_iter-1:0] iterations,
-	output success
+	output success,
+	output [log2max_iter-1:0] iterations
 	);
 
 wire [n*deg_v*log2m-1:0] v_neighbor;
@@ -19,11 +19,13 @@ assign neighbor_index_to_ch = 1836'b00101110100101110100101110100101110100101110
 
 reg [n*deg_v*(INT+FRAC)-1:0] v_msg;
 reg [m*deg_c*(INT+FRAC)-1:0] c_msg;
-reg [INT+FRAC-1:0] LLR;
+wire [INT+FRAC-1:0] LLR = 16'b1010101011001011;
 reg [n*(INT+FRAC)-1:0] LLRs;
 
-reg [n-1:0] data;
-reg [1:0] FSM;
+wire [n-1:0] data = 12'b100101010101;
+reg [n-1:0] dec_cw;
+reg [2:0] FSM;
+reg non_zero_syn;
 
 reg success_dec;
 assign success = success_dec;
@@ -32,6 +34,7 @@ reg [log2max_iter-1:0] iter_num;
 assign iterations = iter_num;
 reg [log2n-1:0] data_iter;
 reg [log2m-1:0] check_iter;
+
 
 wire [log2deg_v-1:0] neighbor_index_to_var_5;
 wire [log2deg_v-1:0] neighbor_index_to_var_4;
@@ -72,6 +75,27 @@ reg [INT+FRAC-1:0] cn_vn_msgs_2;
 reg [INT+FRAC-1:0] cn_vn_msgs_1;
 reg [INT+FRAC-1:0] cn_vn_msgs_0;
 
+wire [INT+FRAC-1:0] cn_vn_msgs_0_0;
+wire [INT+FRAC-1:0] cn_vn_msgs_0_1;
+wire [INT+FRAC-1:0] cn_vn_msgs_0_2;
+wire [INT+FRAC-1:0] cn_vn_msgs_0_3;
+wire [INT+FRAC-1:0] cn_vn_msgs_0_4;
+wire [INT+FRAC-1:0] cn_vn_msgs_0_5;
+
+wire [INT+FRAC-1:0] vn_out_1;
+wire [INT+FRAC-1:0] vn_out_2;
+wire [INT+FRAC-1:0] vn_out_3;
+wire [INT+FRAC-1:0] belief_out;
+
+reg bit_0_in;
+reg bit_1_in;
+reg bit_2_in;
+reg bit_3_in;
+reg bit_4_in;
+reg bit_5_in;
+wire syn_res;
+
+
 cn cn_0_inst (
 	.msg_in_1(vn_cn_msgs_0_0),
 	.msg_in_2(vn_cn_msgs_0_1),
@@ -88,13 +112,23 @@ cn cn_0_inst (
 	);
 
 vr vn_0_inst (
-	.msg_in_1(cn_vn_msgs_0),
-	.msg_in_2(cn_vn_msgs_1),
-	.msg_in_3(cn_vn_msgs_2),
-	.msg_out_1(vn_out_1),
-	.msg_out_2(vn_out_2),
-	.msg_out_3(vn_out_3),
+	.ch_msg_0(cn_vn_msgs_0),
+	.ch_msg_1(cn_vn_msgs_1),
+	.ch_msg_2(cn_vn_msgs_2),
+	.vr_msg_0(vn_out_1),
+	.vr_msg_1(vn_out_2),
+	.vr_msg_2(vn_out_3),
 	.belief(belief_out)
+	);
+
+syn	syn_0_inst (
+	.bit_0(bit_0_in),
+	.bit_1(bit_1_in),
+	.bit_2(bit_2_in),
+	.bit_3(bit_3_in),
+	.bit_4(bit_4_in),
+	.bit_5(bit_5_in),
+	.result(syn_res)
 	);
 
 
@@ -105,10 +139,12 @@ always @(posedge clk or posedge rst) begin
 		data_iter <= 1;
 		check_iter <= 1;
 		iter_num <= 0;
+		dec_cw <= data;
+		non_zero_syn <= 0;
 	end
 
 	else if (FSM == 0) begin
-		if (data_iter < 205) begin
+		if (data_iter < n+1) begin
 			LLRs[data_iter*(INT+FRAC)-1 -: INT+FRAC] <= data[data_iter-1]*LLR;
 		
 			v_msg[data_iter*deg_v*(INT+FRAC)-1 -: INT+FRAC] <= data[data_iter-1]*LLR;
@@ -118,7 +154,7 @@ always @(posedge clk or posedge rst) begin
 			data_iter <= data_iter + 1;
 		end
 		
-		if(data_iter == 205)begin
+		if(data_iter == n+1)begin
 			data_iter <= 1;
 			FSM <= 1;
 
@@ -128,11 +164,18 @@ always @(posedge clk or posedge rst) begin
 			vn_cn_msgs_0_2 <= v_msg[((c_neighbor[(deg_c-3)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-3)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_1 <= v_msg[((c_neighbor[(deg_c-4)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-4)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_0 <= v_msg[((c_neighbor[(deg_c-5)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-5)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+
+			bit_5_in <= dec_cw[c_neighbor[(deg_c)*log2n-1 -: log2n]];
+			bit_4_in <= dec_cw[c_neighbor[(deg_c-1)*log2n-1 -: log2n]];
+			bit_3_in <= dec_cw[c_neighbor[(deg_c-2)*log2n-1 -: log2n]];
+			bit_2_in <= dec_cw[c_neighbor[(deg_c-3)*log2n-1 -: log2n]];
+			bit_1_in <= dec_cw[c_neighbor[(deg_c-4)*log2n-1 -: log2n]];
+			bit_0_in <= dec_cw[c_neighbor[(deg_c-5)*log2n-1 -: log2n]];
 		end
 	end
 
 	else if (FSM == 1) begin
-		if (check_iter < 103) begin
+		if (check_iter < m+1) begin
 			check_iter <= check_iter + 1;
 
 			c_msg[check_iter*deg_c*(INT+FRAC)-1 -: INT+FRAC] <= cn_vn_msgs_0_5;
@@ -141,18 +184,29 @@ always @(posedge clk or posedge rst) begin
 			c_msg[(check_iter*deg_c-3)*(INT+FRAC)-1 -: INT+FRAC] <= cn_vn_msgs_0_2;
 			c_msg[(check_iter*deg_c-4)*(INT+FRAC)-1 -: INT+FRAC] <= cn_vn_msgs_0_1;
 			c_msg[(check_iter*deg_c-5)*(INT+FRAC)-1 -: INT+FRAC] <= cn_vn_msgs_0_0;
+
+			if(syn_res) begin
+				non_zero_syn <= 1;
+			end
 		end
 
-		if (check_iter < 102) begin
+		if (check_iter < m) begin
 			vn_cn_msgs_0_5 <= v_msg[(vn_5_ind*deg_v-neighbor_index_to_var_5)*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_4 <= v_msg[(vn_4_ind*deg_v-neighbor_index_to_var_4)*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_3 <= v_msg[(vn_3_ind*deg_v-neighbor_index_to_var_3)*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_2 <= v_msg[(vn_2_ind*deg_v-neighbor_index_to_var_2)*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_1 <= v_msg[(vn_1_ind*deg_v-neighbor_index_to_var_1)*(INT+FRAC)-1 -: INT+FRAC];
 			vn_cn_msgs_0_0 <= v_msg[(vn_0_ind*deg_v-neighbor_index_to_var_0)*(INT+FRAC)-1 -: INT+FRAC];
+
+			bit_5_in <= dec_cw[vn_5_ind];
+			bit_4_in <= dec_cw[vn_4_ind];
+			bit_3_in <= dec_cw[vn_3_ind];
+			bit_2_in <= dec_cw[vn_2_ind];
+			bit_1_in <= dec_cw[vn_1_ind];
+			bit_0_in <= dec_cw[vn_0_ind];
 		end
 
-		if(check_iter == 103)begin
+		if(check_iter == m+1)begin
 			check_iter <= 1;
 			FSM <= 2;
 
@@ -163,24 +217,55 @@ always @(posedge clk or posedge rst) begin
 	end
 
 	else if(FSM == 2) begin
-		if (data_iter < 205) begin
-			data_iter <= data_iter + 1;
-
-			v_msg[data_iter*deg_v*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_3;
-			v_msg[(data_iter*deg_v-1)*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_2;
-			v_msg[(data_iter*deg_v-2)*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_1;
-		end
-
-		else if (data_iter < 204) begin
-			cn_vn_msgs_2 <= c_msg[((v_neighbor[((data_iter+1)*deg_v)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
-			cn_vn_msgs_1 <= c_msg[((v_neighbor[((data_iter+1)*deg_v-1)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v-1)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
-			cn_vn_msgs_0 <= c_msg[((v_neighbor[((data_iter+1)*deg_v-2)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v-2)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
-		end
-
-		if (data_iter == 205) begin
-			data_iter <= 1;
+		if(non_zero_syn) begin
 			FSM <= 3;
+			iter_num <= iter_num + 1;
+		end else begin
+			FSM <= 4;
 		end
+	end
+
+	else if(FSM == 3) begin
+		if(iter_num < max_iter) begin
+			if (data_iter < n+1) begin
+				data_iter <= data_iter + 1;
+
+				v_msg[data_iter*deg_v*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_3;
+				v_msg[(data_iter*deg_v-1)*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_2;
+				v_msg[(data_iter*deg_v-2)*(INT+FRAC)-1 -: INT+FRAC] <= vn_out_1;
+
+				dec_cw[data_iter] <= ~belief_out[INT+FRAC-1];
+			end
+
+			if (data_iter < n) begin
+				cn_vn_msgs_2 <= c_msg[((v_neighbor[((data_iter+1)*deg_v)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
+				cn_vn_msgs_1 <= c_msg[((v_neighbor[((data_iter+1)*deg_v-1)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v-1)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
+				cn_vn_msgs_0 <= c_msg[((v_neighbor[((data_iter+1)*deg_v-2)*log2m-1 -: log2m])*deg_c-neighbor_index_to_ch[((data_iter+1)*deg_v-2)*log2deg_c-1 -: log2deg_c])*(INT+FRAC)-1 -: INT+FRAC];
+			end
+
+			if (data_iter == n+1) begin
+				data_iter <= 1;
+				FSM <= 1;
+
+				vn_cn_msgs_0_5 <= v_msg[((c_neighbor[(deg_c)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+				vn_cn_msgs_0_4 <= v_msg[((c_neighbor[(deg_c-1)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-1)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+				vn_cn_msgs_0_3 <= v_msg[((c_neighbor[(deg_c-2)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-2)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+				vn_cn_msgs_0_2 <= v_msg[((c_neighbor[(deg_c-3)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-3)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+				vn_cn_msgs_0_1 <= v_msg[((c_neighbor[(deg_c-4)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-4)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+				vn_cn_msgs_0_0 <= v_msg[((c_neighbor[(deg_c-5)*log2n-1 -: log2n])*deg_v-neighbor_index_to_var[(deg_c-5)*log2deg_v-1 -: log2deg_v])*(INT+FRAC)-1 -: INT+FRAC];
+
+				bit_5_in <= dec_cw[c_neighbor[(deg_c)*log2n-1 -: log2n]];
+				bit_4_in <= dec_cw[c_neighbor[(deg_c-1)*log2n-1 -: log2n]];
+				bit_3_in <= dec_cw[c_neighbor[(deg_c-2)*log2n-1 -: log2n]];
+				bit_2_in <= dec_cw[c_neighbor[(deg_c-3)*log2n-1 -: log2n]];
+				bit_1_in <= dec_cw[c_neighbor[(deg_c-4)*log2n-1 -: log2n]];
+				bit_0_in <= dec_cw[c_neighbor[(deg_c-5)*log2n-1 -: log2n]];
+			end
+		end
+	end
+
+	else if(FSM == 4) begin
+		success_dec <= 1;
 	end
 end
 
