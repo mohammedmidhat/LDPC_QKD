@@ -2,12 +2,12 @@ module check_iter_counter #(parameter log2m = 3, parameter m = 6, parameter m_mi
 input clk,
 input rst,
 output [log2m-1:0] check_iter_count,
-output [2:0] state
+output [1:0] state
 );
 
 reg [log2m-1:0] check_iter;
 assign check_iter_count = check_iter;
-reg [2:0] output_state;
+reg [1:0] output_state;
 assign state = output_state;
 
 always @(posedge clk or posedge rst) begin
@@ -18,10 +18,6 @@ always @(posedge clk or posedge rst) begin
 	else begin
 		if(check_iter == m_minus_one) begin
 			output_state <= 2;
-		end
-		
-		if (check_iter == m) begin
-			output_state <= 4;
 		end
 
 		check_iter <= check_iter + 1;
