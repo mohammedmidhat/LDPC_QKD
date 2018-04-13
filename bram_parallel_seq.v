@@ -20,7 +20,7 @@ reg [2:0] FSM;
 reg non_zero_syn;
 reg [1:0] nop_;
 
-reg nop_add = 0;
+reg [2:0] nop_add = 0;
 
 reg success_dec;
 assign success = success_dec;
@@ -693,7 +693,6 @@ always @(posedge clk or posedge rst) begin
 		circ_iter <= 0;
 		iter_num <= 0;
 
-		nop_ <= 0;
 		nop_add <= 0;
 
 		success_dec <= 0;
@@ -705,7 +704,7 @@ always @(posedge clk or posedge rst) begin
 
 	else if (FSM == 0) begin
 		if(circ_iter == circ) begin
-			if(~nop_add) begin
+			if(nop_add == 0) begin
 				if(non_zero_syn) begin
 					FSM <= 1;
 
@@ -729,7 +728,7 @@ always @(posedge clk or posedge rst) begin
 			end
 		end
 		else begin
-			if(nop_add) begin
+			if(nop_add == 1) begin
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
@@ -744,14 +743,21 @@ always @(posedge clk or posedge rst) begin
 	// Update Variable Node messages
 	else if (FSM == 1) begin
 		if(circ_iter == 2) begin
-			nop_ <= 0;
-			FSM <= 2;
+			if(nop_add == 2) begin
+				circ_iter_ <= circ_iter_ + 1;
 
-			chk_r <= 0;
-			chk_w <= 1;
+				nop_add <= 1;
+			end
+			else if (nop_add == 1) begin
+				nop_add <= 0;
+				FSM <= 2;
 
-			circ_iter <= 0;
-			circ_iter_ <= 0;
+				chk_r <= 0;
+				chk_w <= 1;
+
+				circ_iter <= 0;
+				circ_iter_ <= 0;
+			end
 
 			dec_cw[circ_iter_] <= dec_bit_1;
 			dec_cw[circ+circ_iter_] <= dec_bit_2;
@@ -761,72 +767,84 @@ always @(posedge clk or posedge rst) begin
 			dec_cw[5*circ+circ_iter_] <= dec_bit_6;
 		end
 		else begin
-			if(nop_add) begin
-				circ_iter <= circ_iter + 1;
-			end else begin
-				if(nop_ == 1) begin
-					circ_iter_ <= circ_iter_ + 1;
+			if(nop_add == 2) begin
+				circ_iter_ <= circ_iter_ + 1;
 
-					dec_cw[circ_iter_] <= dec_bit_1;
-					dec_cw[circ+circ_iter_] <= dec_bit_2;
-					dec_cw[2*circ+circ_iter_] <= dec_bit_3;
-					dec_cw[3*circ+circ_iter_] <= dec_bit_4;
-					dec_cw[4*circ+circ_iter_] <= dec_bit_5;
-					dec_cw[5*circ+circ_iter_] <= dec_bit_6;
-				end
-				else begin
-					nop_ <= 1;
-				end
+				dec_cw[circ_iter_] <= dec_bit_1;
+				dec_cw[circ+circ_iter_] <= dec_bit_2;
+				dec_cw[2*circ+circ_iter_] <= dec_bit_3;
+				dec_cw[3*circ+circ_iter_] <= dec_bit_4;
+				dec_cw[4*circ+circ_iter_] <= dec_bit_5;
+				dec_cw[5*circ+circ_iter_] <= dec_bit_6;
+			end
+			else if (nop_add == 1) begin
+				nop_add <= 2;
+			end
+			else begin
+				nop_add <= 1;
 			end
 
-			nop_add <= ~nop_add;			
+			circ_iter <= circ_iter + 1;
 		end
 	end
 
 	// Update Check Node messages
 	else if (FSM == 2) begin
 		if(circ_iter == 2) begin
-			if(non_zero_syn) begin
-				if(iter_num < max_iter) begin
-					nop_ <= 0;
-					FSM <= 1;
+			if(nop_add == 2) begin
+				circ_iter_ <= circ_iter_ + 1;
 
-					chk_r <= 1;
-					chk_w <= 0;
+				if(syn_res) begin
+					non_zero_syn <= 1;
+				end
 
-					non_zero_syn <= 0;
+				nop_add <= 1;
+			end
+			else if (nop_add == 1) begin
+				if(non_zero_syn) begin
+					if(iter_num < max_iter) begin
+						nop_add <= 0;
+						FSM <= 1;
 
-					iter_num <= iter_num + 1;
+						chk_r <= 1;
+						chk_w <= 0;
 
-					circ_iter <= 0;
-					circ_iter_ <= 0;
+						non_zero_syn <= 0;
+
+						iter_num <= iter_num + 1;
+
+						circ_iter <= 0;
+						circ_iter_ <= 0;
+					end
+					else begin
+						FSM <= 4;
+					end
 				end
 				else begin
-					FSM <= 4;
+					FSM <= 3;
 				end
-			end
-			else begin
-				FSM <= 3;
 			end
 		end
 		else begin
-		    if(nop_add) begin
-                circ_iter <= circ_iter + 1;
+			if(nop_add == 2) begin
+				circ_iter_ <= circ_iter_ + 1;
 
-                if(syn_res) begin
+				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
-            end
-            else begin
-                if(nop_) begin
-					circ_iter_ <= circ_iter_ + 1;
+			end
+			else if (nop_add == 1) begin
+				if(syn_res) begin
+					non_zero_syn <= 1;
 				end
-				else begin
-					nop_ <= 1;
-				end
-            end
 
-			nop_add <= ~nop_add;
+				nop_add <= 2;
+			end
+			else begin
+				nop_add <= 1;
+			end
+
+			circ_iter <= circ_iter + 1;
 		end
 	end
 
