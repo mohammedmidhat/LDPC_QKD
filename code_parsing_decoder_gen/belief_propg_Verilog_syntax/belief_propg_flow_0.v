@@ -1,5 +1,6 @@
 	input clk,
 	input rst,
+	input [n-1:0] data,
 	output success,
 	output [log2max_iter-1:0] iterations
 	);
@@ -10,7 +11,6 @@ reg chk_r = 0;
 reg chk_w = 0;
 
 wire [INT+FRAC-1:0] LLR = 16'b0000000000001011;
-wire [n-1:0] data = 155'b10100010110010110001101000000100101010111110010110101010010000101101111111100000001000000011100101101001001100000010010011110010100010110110011101001100110;
 reg [n-1:0] dec_cw;
 reg [2:0] FSM;
 reg non_zero_syn;

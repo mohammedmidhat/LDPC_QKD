@@ -1,3 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company:         MIT Quantum Photonics Group
+// Author:        Mohammed Al Ai Baky
+// 
+// Create Date:     6/6/2018 
+// Design Name:     LDPC_decoder_Frolov_1024_0.5
+// Module Name:     min
+// Project Name:    LDPC_decoder_Frolov_1024_0.5
+// Target Devices:  VC707 Virtex-7 FPGA
+// Tool versions:   Vivado 2017.4
+// Description:     Min node module
+//
+// Dependencies:    
+//
+// Revision: 
+// Revision 0.0
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module min #(parameter INT = 8, parameter FRAC = 8)(
 input [INT+FRAC-1:0] msg_1,
 input [INT+FRAC-1:0] msg_2,
