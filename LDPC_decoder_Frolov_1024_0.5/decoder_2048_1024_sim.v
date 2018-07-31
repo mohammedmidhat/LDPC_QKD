@@ -25,7 +25,7 @@ module decoder_2048_1024_sim;
 	parameter circ = 128;
 	parameter log2circ = 8;
 	parameter log2max_iter = 5;
-	parameter max_iter = 30;
+	parameter max_iter = 6;
 	parameter INT = 8;
 	parameter FRAC = 8;
 
@@ -40,14 +40,6 @@ module decoder_2048_1024_sim;
 	// Outputs
 	wire success;
 	wire [4:0] iterations;
-
-	// decoder uut (
-	// 	.clk_p(clk_p),
-	// 	.clk_n(clk_n),
-	// 	.rst(rst),
-	// 	.success(success),
-	// 	.iterations(iterations)
-	// );
 
 	top uut (
 		.clk_p(clk_p),
@@ -211,6 +203,11 @@ module decoder_2048_1024_sim;
 				#(2*2*sim_half_period)
 				tog = tog;
 			end
+
+			#(6*sim_half_period)
+			rst = 1;
+			#(6*sim_half_period)
+			rst = 0;
 		end
 	end
 

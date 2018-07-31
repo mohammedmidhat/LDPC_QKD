@@ -40,6 +40,7 @@ log2circ_size = math.ceil(math.log2(circ_size))+1       ## The extra bit to allo
 var_neighbors = {}
 chk_neighbors = {}
 
+
 skip_lines = 4
 for i in range(skip_lines):
 	code_f.readline()
@@ -89,7 +90,7 @@ belief_propg_flow_0_f.close()
 
 
 ## Writing code bram instantiation
-decoder_f.write("wire [log2circ:0] circ_addr;\n")
+decoder_f.write("wire [log2circ-1:0] circ_addr;\n")
 decoder_f.write("assign circ_addr = (chk_r)? circ+circ_iter: circ_iter;\n\n")
 
 for i in range(num_non_zero_circ):
@@ -104,11 +105,11 @@ decoder_f.write("\n")
 
 
 ## Writing msg bram instantiation
-decoder_f.write("wire [log2circ:0] circ_msg_addr_w;\n")
+decoder_f.write("wire [log2circ-1:0] circ_msg_addr_w;\n")
 decoder_f.write("assign circ_msg_addr_w = (chk_w)? circ+circ_iter_: circ_iter_;\n\n")
 
 for i in range(num_non_zero_circ):
-    decoder_f.write("wire [log2circ:0] circ_"+str(i+1)+"_msg_addr_r;\n")
+    decoder_f.write("wire [log2circ-1:0] circ_"+str(i+1)+"_msg_addr_r;\n")
     decoder_f.write("assign circ_"+str(i+1)+"_msg_addr_r = (chk_r)? circ+circ_"+str(i+1)+"_data: circ_"+str(i+1)+"_data;\n")
     decoder_f.write("wire [INT+FRAC-1:0] circ_"+str(i+1)+"_msg_data_in;\n")
     decoder_f.write("wire [INT+FRAC-1:0] circ_"+str(i+1)+"_msg_data_out;\n")
@@ -192,24 +193,23 @@ for i in range(int(m/circ_size)):
         decoder_f.write(".msg_in_"+str(j)+"("+max_value+"),\n")
 
     ## Out messages
-    bit_order = 1
-    for j in range(int(n/circ_size-1)):
+    non_zero_circulants = []
+    for j in range(int(n/circ_size)):
         if((i,j) in circ_addr_map):
-            decoder_f.write(".msg_out_"+str(bit_order)+"(circ_"+str(circ_addr_map[(i,j)])+"_msg_data_cn),\n")
-            bit_order += 1
+            non_zero_circulants.append(str(circ_addr_map[(i,j)]))
 
-    while(bit_order < deg_c_max):
-        decoder_f.write(".msg_out_"+str(bit_order)+"(),\n")
-        bit_order += 1
-
-    ## last line
-    if(bit_order == deg_c_max):
-        if((i,n/circ_size-1) in circ_addr_map):
-            decoder_f.write(".msg_out_"+str(deg_c_max)+"(circ_"+str(circ_addr_map[(i,n/circ_size-1)])+"_msg_data_cn)\n")
-        else:
-            decoder_f.write(".msg_out_"+str(deg_c_max)+"()\n")
-
-    decoder_f.write(");\n\n")
+    if(len(non_zero_circulants) < deg_c_max):
+        for j in range(len(non_zero_circulants)):
+            decoder_f.write(".msg_out_"+str(j+1)+"(circ_"+non_zero_circulants[j]+"_msg_data_cn),\n")
+        for j in range(len(non_zero_circulants)+1,deg_c_max):
+            decoder_f.write(".msg_out_"+str(j)+"(),\n")
+        decoder_f.write(".msg_out_"+str(deg_c_max)+"()\n")
+        decoder_f.write(");\n\n")
+    else:
+        for j in range(len(non_zero_circulants)-1):
+            decoder_f.write(".msg_out_"+str(j+1)+"(circ_"+non_zero_circulants[j]+"_msg_data_cn),\n")
+        decoder_f.write(".msg_out_"+str(deg_c_max)+"(circ_"+non_zero_circulants[deg_c_max-1]+"_msg_data_cn)\n")
+        decoder_f.write(");\n\n")
 
 decoder_f.write("\n")
 
@@ -273,7 +273,7 @@ for i in range(int(n/circ_size)):
         decoder_f.write("\t\t\tdec_cw["+str(i)+"*circ+circ_iter_] <= dec_bit_"+str(i+1)+";\n")
 decoder_f.write("\t\tend\n")
 decoder_f.write("\t\telse begin\n")
-decoder_f.write("\t\t\tif(nop == 2) begin\n")
+decoder_f.write("\t\t\tif(nop == 4) begin\n")
 decoder_f.write("\t\t\t\tcirc_iter_ <= circ_iter_ + 1;\n\n")
 for i in range(int(n/circ_size)):
         decoder_f.write("\t\t\t\tdec_cw["+str(i)+"*circ+circ_iter_] <= dec_bit_"+str(i+1)+";\n")
@@ -286,7 +286,6 @@ belief_propg_flow_2_f.close()
 
 
 decoder_f.close()
-
 
 
 ## Write syn.v
@@ -308,6 +307,89 @@ decoder_f.write("endmodule\n")
 
 decoder_f.close()
 
+
+## Write min.v
+min_module_filename = os.path.join(decoder_Verilog_files_dirname, "min.v")
+decoder_f = open(min_module_filename,"w")
+
+decoder_f.write("module min #(parameter INT = "+str(INT)+", parameter FRAC = "+str(FRAC)+")(\n")
+
+## I/O
+## In messages
+for i in range(deg_c_max-1):
+    decoder_f.write("input [INT+FRAC-1:0] msg_"+str(i+1)+",\n")
+## Out message
+decoder_f.write("output [INT+FRAC-1:0] msg\n")
+decoder_f.write(");\n\n")
+
+## Instantiating signals
+for i in range(deg_c_max-1):
+    decoder_f.write("wire [INT+FRAC-1:0] abs_msg_"+str(i+1)+";\n")
+decoder_f.write("wire [INT+FRAC-1:0] abs_msg;\n\n")
+
+## Assigning signals
+for i in range(deg_c_max-1):
+    decoder_f.write("assign abs_msg_"+str(i+1)+" = (msg_"+str(i+1)+"[INT+FRAC-1])? -msg_"+str(i+1)+":msg_"+str(i+1)+";\n")
+decoder_f.write("\n")
+
+## Instantiation/Assignment/Computation of intermediate signals
+inputs = deg_c_max-1      ## number inputs to be summed up, inputs >= 2
+intermediate_min_signals = []  ## list of 3-tuple (a,b,c) of the input/output signals to each sat_adder module
+##
+## We formulate the problem of signal instantiation/assignment/computation to compute
+## intermediate values and eventually the total sum, as a tree where the leaf nodes
+## are the deg_c_max input messages. The root node is the final absolute min value. There
+## are (2*inputs-1) nodes in this tree.
+## Note this results in a balanced tree minimizing the delay path between any input signal and the
+## result of the n-input adder
+##
+num_nodes = 2*inputs-1
+num_non_leaf_nodes = num_nodes - inputs
+first_leaf_parent = num_non_leaf_nodes - math.ceil(inputs/2)
+
+for i in range(num_non_leaf_nodes):
+    if(i == first_leaf_parent):
+        if(inputs%2 == 1):
+            if(i == 0):
+                intermediate_min_signals.append(("r"+str(2*i+1),"abs_msg_"+str(1),"abs_msg"))
+            else:
+                intermediate_min_signals.append(("r"+str(2*i+1),"abs_msg_"+str(1),"r"+str(i)))
+        else:
+            if(i == 0):
+                intermediate_min_signals.append(("abs_msg_"+str(1),"abs_msg_"+str(2),"abs_msg"))
+            else:
+                intermediate_min_signals.append(("abs_msg_"+str(1),"abs_msg_"+str(2),"r"+str(i)))
+    elif(i > first_leaf_parent):
+        after_first_leaf_p_ind = i - first_leaf_parent
+        if(inputs%2 == 1):
+            intermediate_min_signals.append(("abs_msg_"+str(2*after_first_leaf_p_ind),"abs_msg_"+str(2*after_first_leaf_p_ind+1),"r"+str(i)))
+        else:
+            intermediate_min_signals.append(("abs_msg_"+str(2*after_first_leaf_p_ind+1),"abs_msg_"+str(2*after_first_leaf_p_ind+2),"r"+str(i)))
+    else:
+        if(i == 0):
+            intermediate_min_signals.append(("r"+str(1),"r"+str(2),"abs_msg"))
+        else:
+            intermediate_min_signals.append(("r"+str(2*i+1),"r"+str(2*i+2),"r"+str(i)))
+
+## Intermediate signal instantiation
+for i in range(num_non_leaf_nodes-1):
+    decoder_f.write("wire [INT+FRAC-1:0] r"+str(i+1)+"\n")
+decoder_f.write("\n")
+
+## Assignment
+for i in intermediate_min_signals:
+    decoder_f.write("assign "+i[2]+" = ("+i[0]+"<"+i[1]+")? "+i[0]+":"+i[1]+";\n")
+decoder_f.write("\n")
+
+## Get the product of input msgs signs in the result
+min_result_str = "assign msg = ("
+for i in range(deg_c_max-2):
+    min_result_str += "msg_"+str(i+1)+"[INT+FRAC-1]^"
+min_result_str += "msg_"+str(deg_c_max-1)+"[INT+FRAC-1])? -abs_msg:abs_msg;\n\n"
+decoder_f.write(min_result_str)
+decoder_f.write("endmodule")
+
+decoder_f.close()
 
 
 ## Write cn.v
@@ -335,7 +417,7 @@ for i in range(deg_c_max):
     for j in list(range(1,i+1))+list(range(i+2,deg_c_max+1)):
         decoder_f.write("\t.msg_"+str(msg_port_oder)+"(msg_in_"+str(j)+"),\n")
         msg_port_oder += 1
-    decoder_f.write("\t.msg (msg_out_"+str(i+1)+")\n")
+    decoder_f.write("\t.msg(msg_out_"+str(i+1)+")\n")
     decoder_f.write("\t);\n\n")
 
 decoder_f.write("endmodule\n")
@@ -397,40 +479,77 @@ for i in range(deg_v_max):
 decoder_f.write("\toutput [INT+FRAC-1:0] belief\n")
 decoder_f.write("\t);\n\n")
 
+## signal and sat_adder module instantiation
+inputs = deg_v_max+1      ## number inputs to be summed up, inputs >= 2
+sat_adder_signals = []  ## list of 3-tuple (a,b,c) of the input/output signals to each sat_adder module
+##
+## We formulate the problem of signal and sat_adder module instantiation to compute
+## intermediate values and eventually the total sum, as a tree where the leaf nodes
+## are the deg_v_max+1 input messages. The root node is the final belief value. There
+## are (2*inputs-1) nodes in this tree.
+## sat_adders are not instantiated for the leaf nodes. Other nodes represent intermediate
+## or final (root) values which also corresponds to an adder computing that value
+## Note this results in a balanced tree minimizing the delay path between any input signal and the
+## result of the n-input adder
+## An imbalanced tree implements the adder with the same hardware utilization but results in longer
+## delay paths
+##
+num_nodes = 2*inputs-1
+num_non_leaf_nodes = num_nodes - inputs
+first_leaf_parent = num_non_leaf_nodes - math.ceil(inputs/2)
 
-#### signal and sat_adder module instantiation
-##inputs = deg_v_max+1      ## number inputs to be summed up, inputs >= 2
-##sat_adder_signals = []  ## list of 3-tuple (a,b,c) of the input/output signals to each sat_adder module
-##
-#### We formulate the problem of signal and sat_adder module instantiation to compute
-#### intermediate values and eventually the total sum, as a tree where the leaf nodes
-#### are the deg_v_max+1 input messages. The root node is the final belief value. There
-#### are (2*inputs-1) nodes in this tree.
-#### sat_adders are not instantiated for the lead nodes. Other nodes represent intermediate
-#### or final (root) values which also corresponds to an adder computing that value
-##
-##num_nodes = 2*inputs-1
-##num_non_leaf_nodes = num_nodes - inputs
-##first_leaf_parent = num_non_leaf_nodes - math.ceil(inputs/2)
-##
-##for i in range(num_nodes):
-##    if(i == first_leaf_parent):
-##        if(inputs%2 == 1):
-##            sat_adder_signals.append(("vr_msg_"+str(2*(i+1)-1)+"_int","",""))
-##        else:
-##            if(i==0):
-##                sat_adder_signals.append()
-##            else:
-##                sat_adder_signals.append()
-##    elif(i > first_leaf_parent):
-##        sat_adder_signals.append()
-##    else:
-##        if(i==0):
-##            sat_adder_signals.append()
-##        else:
-##            sat_adder_signals.append()
-##
-##decoder_f.close()
+for i in range(num_non_leaf_nodes):
+    if(i == first_leaf_parent):
+        if(inputs%2 == 1):
+            if(i == 0):
+                sat_adder_signals.append(("vr_msg_"+str(2*i+1)+"_int","LLR","belief"))
+            else:
+                sat_adder_signals.append(("vr_msg_"+str(2*i+1)+"_int","LLR","vr_msg_"+str(i)+"_int"))
+        else:
+            if(i == 0):
+                sat_adder_signals.append(("LLR","ch_msg_"+str(1),"belief"))
+            else:
+                sat_adder_signals.append(("LLR","ch_msg_"+str(1),"vr_msg_"+str(i)+"_int"))
+    elif(i > first_leaf_parent):
+        after_first_leaf_p_ind = i - first_leaf_parent
+        if(inputs%2 == 1):
+            sat_adder_signals.append(("ch_msg_"+str(2*after_first_leaf_p_ind-1),"ch_msg_"+str(2*after_first_leaf_p_ind),"vr_msg_"+str(i)+"_int"))
+        else:
+            sat_adder_signals.append(("ch_msg_"+str(2*after_first_leaf_p_ind),"ch_msg_"+str(2*after_first_leaf_p_ind+1),"vr_msg_"+str(i)+"_int"))
+    else:
+        if(i == 0):
+            sat_adder_signals.append(("vr_msg_"+str(2*i+1)+"_int","vr_msg_"+str(2*i+2)+"_int","belief"))
+        else:
+            sat_adder_signals.append(("vr_msg_"+str(2*i+1)+"_int","vr_msg_"+str(2*i+2)+"_int","vr_msg_"+str(i)+"_int"))
+
+## Intermediate signal instantiation
+for i in range(num_non_leaf_nodes-1):
+    decoder_f.write("wire [INT+FRAC-1:0] vr_msg_"+str(i+1)+"_int;\n")
+decoder_f.write("\n\n")
+
+# Instintiate n-input adder sat_adders
+for idx, val in enumerate(sat_adder_signals):
+    decoder_f.write("sat_adder sat_adder_"+str(idx)+"(\n")
+    decoder_f.write(".a("+val[0]+"),\n")
+    decoder_f.write(".b("+val[1]+"),\n")
+    decoder_f.write(".c("+val[2]+")\n")
+    decoder_f.write(");\n\n")
+    
+decoder_f.write("\n")
+
+# Instintiate sat_adders to get the output msg
+for i in range(deg_v_max):
+    idx += 1
+    decoder_f.write("sat_adder sat_adder_"+str(idx)+"(\n")
+    decoder_f.write(".a(belief),\n")
+    decoder_f.write(".b(-ch_msg_"+str(i+1)+"),\n")
+    decoder_f.write(".c(vr_msg_"+str(i+1)+")\n")
+    decoder_f.write(");\n\n")
+    
+decoder_f.write("\n")
+decoder_f.write("endmodule\n")
+
+decoder_f.close()
 
 
 

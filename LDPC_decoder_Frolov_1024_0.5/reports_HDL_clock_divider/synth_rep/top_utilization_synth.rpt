@@ -1,0 +1,302 @@
+Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2017.4 (lin64) Build 2086221 Fri Dec 15 20:54:30 MST 2017
+| Date         : Sun Jun 10 22:03:26 2018
+| Host         : mtlcad running 64-bit Red Hat Enterprise Linux Server release 6.9 (Santiago)
+| Command      : report_utilization -file top_utilization_synth.rpt -pb top_utilization_synth.pb
+| Design       : top
+| Device       : 7vx485tffg1761-2
+| Design State : Synthesized
+-------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Slice Logic
+1.1 Summary of Registers by Type
+2. Memory
+3. DSP
+4. IO and GT Specific
+5. Clocking
+6. Specific Feature
+7. Primitives
+8. Black Boxes
+9. Instantiated Netlists
+
+1. Slice Logic
+--------------
+
++-------------------------+-------+-------+-----------+-------+
+|        Site Type        |  Used | Fixed | Available | Util% |
++-------------------------+-------+-------+-----------+-------+
+| Slice LUTs*             | 30806 |     0 |    303600 | 10.15 |
+|   LUT as Logic          | 30806 |     0 |    303600 | 10.15 |
+|   LUT as Memory         |     0 |     0 |    130800 |  0.00 |
+| Slice Registers         |  2145 |     0 |    607200 |  0.35 |
+|   Register as Flip Flop |  2145 |     0 |    607200 |  0.35 |
+|   Register as Latch     |     0 |     0 |    607200 |  0.00 |
+| F7 Muxes                |   973 |     0 |    151800 |  0.64 |
+| F8 Muxes                |   456 |     0 |     75900 |  0.60 |
++-------------------------+-------+-------+-----------+-------+
+* Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
+
+
+1.1 Summary of Registers by Type
+--------------------------------
+
++-------+--------------+-------------+--------------+
+| Total | Clock Enable | Synchronous | Asynchronous |
++-------+--------------+-------------+--------------+
+| 0     |            _ |           - |            - |
+| 0     |            _ |           - |          Set |
+| 0     |            _ |           - |        Reset |
+| 0     |            _ |         Set |            - |
+| 0     |            _ |       Reset |            - |
+| 0     |          Yes |           - |            - |
+| 0     |          Yes |           - |          Set |
+| 0     |          Yes |           - |        Reset |
+| 103   |          Yes |         Set |            - |
+| 2042  |          Yes |       Reset |            - |
++-------+--------------+-------------+--------------+
+
+
+2. Memory
+---------
+
++----------------+------+-------+-----------+-------+
+|    Site Type   | Used | Fixed | Available | Util% |
++----------------+------+-------+-----------+-------+
+| Block RAM Tile |    0 |     0 |      1030 |  0.00 |
+|   RAMB36/FIFO* |    0 |     0 |      1030 |  0.00 |
+|   RAMB18       |    0 |     0 |      2060 |  0.00 |
++----------------+------+-------+-----------+-------+
+* Note: Each Block RAM Tile only has one FIFO logic available and therefore can accommodate only one FIFO36E1 or one FIFO18E1. However, if a FIFO18E1 occupies a Block RAM Tile, that tile can still accommodate a RAMB18E1
+
+
+3. DSP
+------
+
++-----------+------+-------+-----------+-------+
+| Site Type | Used | Fixed | Available | Util% |
++-----------+------+-------+-----------+-------+
+| DSPs      |    0 |     0 |      2800 |  0.00 |
++-----------+------+-------+-----------+-------+
+
+
+4. IO and GT Specific
+---------------------
+
++-----------------------------+------+-------+-----------+-------+
+|          Site Type          | Used | Fixed | Available | Util% |
++-----------------------------+------+-------+-----------+-------+
+| Bonded IOB                  |    9 |     0 |       700 |  1.29 |
+| Bonded IPADs                |    0 |     0 |        86 |  0.00 |
+| Bonded OPADs                |    0 |     0 |        56 |  0.00 |
+| PHY_CONTROL                 |    0 |     0 |        14 |  0.00 |
+| PHASER_REF                  |    0 |     0 |        14 |  0.00 |
+| OUT_FIFO                    |    0 |     0 |        56 |  0.00 |
+| IN_FIFO                     |    0 |     0 |        56 |  0.00 |
+| IDELAYCTRL                  |    0 |     0 |        14 |  0.00 |
+| IBUFDS                      |    1 |     0 |       672 |  0.15 |
+| GTXE2_COMMON                |    0 |     0 |         7 |  0.00 |
+| GTXE2_CHANNEL               |    0 |     0 |        28 |  0.00 |
+| PHASER_OUT/PHASER_OUT_PHY   |    0 |     0 |        56 |  0.00 |
+| PHASER_IN/PHASER_IN_PHY     |    0 |     0 |        56 |  0.00 |
+| IDELAYE2/IDELAYE2_FINEDELAY |    0 |     0 |       700 |  0.00 |
+| ODELAYE2/ODELAYE2_FINEDELAY |    0 |     0 |       700 |  0.00 |
+| IBUFDS_GTE2                 |    0 |     0 |        14 |  0.00 |
+| ILOGIC                      |    0 |     0 |       700 |  0.00 |
+| OLOGIC                      |    0 |     0 |       700 |  0.00 |
++-----------------------------+------+-------+-----------+-------+
+
+
+5. Clocking
+-----------
+
++------------+------+-------+-----------+-------+
+|  Site Type | Used | Fixed | Available | Util% |
++------------+------+-------+-----------+-------+
+| BUFGCTRL   |    2 |     0 |        32 |  6.25 |
+| BUFIO      |    0 |     0 |        56 |  0.00 |
+| MMCME2_ADV |    0 |     0 |        14 |  0.00 |
+| PLLE2_ADV  |    0 |     0 |        14 |  0.00 |
+| BUFMRCE    |    0 |     0 |        28 |  0.00 |
+| BUFHCE     |    0 |     0 |       168 |  0.00 |
+| BUFR       |    0 |     0 |        56 |  0.00 |
++------------+------+-------+-----------+-------+
+
+
+6. Specific Feature
+-------------------
+
++-------------+------+-------+-----------+-------+
+|  Site Type  | Used | Fixed | Available | Util% |
++-------------+------+-------+-----------+-------+
+| BSCANE2     |    0 |     0 |         4 |  0.00 |
+| CAPTUREE2   |    0 |     0 |         1 |  0.00 |
+| DNA_PORT    |    0 |     0 |         1 |  0.00 |
+| EFUSE_USR   |    0 |     0 |         1 |  0.00 |
+| FRAME_ECCE2 |    0 |     0 |         1 |  0.00 |
+| ICAPE2      |    0 |     0 |         2 |  0.00 |
+| PCIE_2_1    |    0 |     0 |         4 |  0.00 |
+| STARTUPE2   |    0 |     0 |         1 |  0.00 |
+| XADC        |    0 |     0 |         1 |  0.00 |
++-------------+------+-------+-----------+-------+
+
+
+7. Primitives
+-------------
+
++----------+-------+---------------------+
+| Ref Name |  Used | Functional Category |
++----------+-------+---------------------+
+| LUT6     | 10505 |                 LUT |
+| LUT1     |  7729 |                 LUT |
+| LUT3     |  7367 |                 LUT |
+| LUT5     |  7029 |                 LUT |
+| CARRY4   |  3617 |          CarryLogic |
+| LUT4     |  3359 |                 LUT |
+| FDRE     |  2042 |        Flop & Latch |
+| LUT2     |  1479 |                 LUT |
+| MUXF7    |   973 |               MuxFx |
+| MUXF8    |   456 |               MuxFx |
+| FDSE     |   103 |        Flop & Latch |
+| OBUF     |     6 |                  IO |
+| BUFG     |     2 |               Clock |
+| IBUFDS   |     1 |                  IO |
+| IBUF     |     1 |                  IO |
++----------+-------+---------------------+
+
+
+8. Black Boxes
+--------------
+
++-------------+------+
+|   Ref Name  | Used |
++-------------+------+
+| circ_9_msg  |    1 |
+| circ_9      |    1 |
+| circ_8_msg  |    1 |
+| circ_8      |    1 |
+| circ_7_msg  |    1 |
+| circ_7      |    1 |
+| circ_6_msg  |    1 |
+| circ_6      |    1 |
+| circ_5_msg  |    1 |
+| circ_57_msg |    1 |
+| circ_57     |    1 |
+| circ_56_msg |    1 |
+| circ_56     |    1 |
+| circ_55_msg |    1 |
+| circ_55     |    1 |
+| circ_54_msg |    1 |
+| circ_54     |    1 |
+| circ_53_msg |    1 |
+| circ_53     |    1 |
+| circ_52_msg |    1 |
+| circ_52     |    1 |
+| circ_51_msg |    1 |
+| circ_51     |    1 |
+| circ_50_msg |    1 |
+| circ_50     |    1 |
+| circ_5      |    1 |
+| circ_4_msg  |    1 |
+| circ_49_msg |    1 |
+| circ_49     |    1 |
+| circ_48_msg |    1 |
+| circ_48     |    1 |
+| circ_47_msg |    1 |
+| circ_47     |    1 |
+| circ_46_msg |    1 |
+| circ_46     |    1 |
+| circ_45_msg |    1 |
+| circ_45     |    1 |
+| circ_44_msg |    1 |
+| circ_44     |    1 |
+| circ_43_msg |    1 |
+| circ_43     |    1 |
+| circ_42_msg |    1 |
+| circ_42     |    1 |
+| circ_41_msg |    1 |
+| circ_41     |    1 |
+| circ_40_msg |    1 |
+| circ_40     |    1 |
+| circ_4      |    1 |
+| circ_3_msg  |    1 |
+| circ_39_msg |    1 |
+| circ_39     |    1 |
+| circ_38_msg |    1 |
+| circ_38     |    1 |
+| circ_37_msg |    1 |
+| circ_37     |    1 |
+| circ_36_msg |    1 |
+| circ_36     |    1 |
+| circ_35_msg |    1 |
+| circ_35     |    1 |
+| circ_34_msg |    1 |
+| circ_34     |    1 |
+| circ_33_msg |    1 |
+| circ_33     |    1 |
+| circ_32_msg |    1 |
+| circ_32     |    1 |
+| circ_31_msg |    1 |
+| circ_31     |    1 |
+| circ_30_msg |    1 |
+| circ_30     |    1 |
+| circ_3      |    1 |
+| circ_2_msg  |    1 |
+| circ_29_msg |    1 |
+| circ_29     |    1 |
+| circ_28_msg |    1 |
+| circ_28     |    1 |
+| circ_27_msg |    1 |
+| circ_27     |    1 |
+| circ_26_msg |    1 |
+| circ_26     |    1 |
+| circ_25_msg |    1 |
+| circ_25     |    1 |
+| circ_24_msg |    1 |
+| circ_24     |    1 |
+| circ_23_msg |    1 |
+| circ_23     |    1 |
+| circ_22_msg |    1 |
+| circ_22     |    1 |
+| circ_21_msg |    1 |
+| circ_21     |    1 |
+| circ_20_msg |    1 |
+| circ_20     |    1 |
+| circ_2      |    1 |
+| circ_1_msg  |    1 |
+| circ_19_msg |    1 |
+| circ_19     |    1 |
+| circ_18_msg |    1 |
+| circ_18     |    1 |
+| circ_17_msg |    1 |
+| circ_17     |    1 |
+| circ_16_msg |    1 |
+| circ_16     |    1 |
+| circ_15_msg |    1 |
+| circ_15     |    1 |
+| circ_14_msg |    1 |
+| circ_14     |    1 |
+| circ_13_msg |    1 |
+| circ_13     |    1 |
+| circ_12_msg |    1 |
+| circ_12     |    1 |
+| circ_11_msg |    1 |
+| circ_11     |    1 |
+| circ_10_msg |    1 |
+| circ_10     |    1 |
+| circ_1      |    1 |
++-------------+------+
+
+
+9. Instantiated Netlists
+------------------------
+
++----------+------+
+| Ref Name | Used |
++----------+------+
+
+

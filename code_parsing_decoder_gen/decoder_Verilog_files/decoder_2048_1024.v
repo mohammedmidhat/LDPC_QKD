@@ -3,6 +3,7 @@ module decoder#(parameter max_iter = 30, parameter log2max_iter = 5, parameter I
 	input clk,
 	input rst,
 	input [n-1:0] data,
+	input [INT+FRAC-1:0] LLR,
 	output success,
 	output [log2max_iter-1:0] iterations
 	);
@@ -12,9 +13,8 @@ reg [log2circ-1:0] circ_iter_;
 reg chk_r = 0;
 reg chk_w = 0;
 
-wire [INT+FRAC-1:0] LLR = 16'b0000000000001011;
 reg [n-1:0] dec_cw;
-reg [2:0] FSM;
+reg [4:0] FSM;
 reg non_zero_syn;
 
 reg [2:0] nop = 0;
@@ -26,7 +26,7 @@ reg [log2max_iter-1:0] iter_num;
 assign iterations = iter_num;
 
 
-wire [log2circ:0] circ_addr;
+wire [log2circ-1:0] circ_addr;
 assign circ_addr = (chk_r)? circ+circ_iter: circ_iter;
 
 wire [log2circ-2:0] circ_1_data;
@@ -429,10 +429,10 @@ circ_57 circ_57_inst(
 );
 
 
-wire [log2circ:0] circ_msg_addr_w;
+wire [log2circ-1:0] circ_msg_addr_w;
 assign circ_msg_addr_w = (chk_w)? circ+circ_iter_: circ_iter_;
 
-wire [log2circ:0] circ_1_msg_addr_r;
+wire [log2circ-1:0] circ_1_msg_addr_r;
 assign circ_1_msg_addr_r = (chk_r)? circ+circ_1_data: circ_1_data;
 wire [INT+FRAC-1:0] circ_1_msg_data_in;
 wire [INT+FRAC-1:0] circ_1_msg_data_out;
@@ -446,7 +446,7 @@ circ_1_msg circ_1_msg_inst(
 .doutb(circ_1_msg_data_out)
 );
 
-wire [log2circ:0] circ_2_msg_addr_r;
+wire [log2circ-1:0] circ_2_msg_addr_r;
 assign circ_2_msg_addr_r = (chk_r)? circ+circ_2_data: circ_2_data;
 wire [INT+FRAC-1:0] circ_2_msg_data_in;
 wire [INT+FRAC-1:0] circ_2_msg_data_out;
@@ -460,7 +460,7 @@ circ_2_msg circ_2_msg_inst(
 .doutb(circ_2_msg_data_out)
 );
 
-wire [log2circ:0] circ_3_msg_addr_r;
+wire [log2circ-1:0] circ_3_msg_addr_r;
 assign circ_3_msg_addr_r = (chk_r)? circ+circ_3_data: circ_3_data;
 wire [INT+FRAC-1:0] circ_3_msg_data_in;
 wire [INT+FRAC-1:0] circ_3_msg_data_out;
@@ -474,7 +474,7 @@ circ_3_msg circ_3_msg_inst(
 .doutb(circ_3_msg_data_out)
 );
 
-wire [log2circ:0] circ_4_msg_addr_r;
+wire [log2circ-1:0] circ_4_msg_addr_r;
 assign circ_4_msg_addr_r = (chk_r)? circ+circ_4_data: circ_4_data;
 wire [INT+FRAC-1:0] circ_4_msg_data_in;
 wire [INT+FRAC-1:0] circ_4_msg_data_out;
@@ -488,7 +488,7 @@ circ_4_msg circ_4_msg_inst(
 .doutb(circ_4_msg_data_out)
 );
 
-wire [log2circ:0] circ_5_msg_addr_r;
+wire [log2circ-1:0] circ_5_msg_addr_r;
 assign circ_5_msg_addr_r = (chk_r)? circ+circ_5_data: circ_5_data;
 wire [INT+FRAC-1:0] circ_5_msg_data_in;
 wire [INT+FRAC-1:0] circ_5_msg_data_out;
@@ -502,7 +502,7 @@ circ_5_msg circ_5_msg_inst(
 .doutb(circ_5_msg_data_out)
 );
 
-wire [log2circ:0] circ_6_msg_addr_r;
+wire [log2circ-1:0] circ_6_msg_addr_r;
 assign circ_6_msg_addr_r = (chk_r)? circ+circ_6_data: circ_6_data;
 wire [INT+FRAC-1:0] circ_6_msg_data_in;
 wire [INT+FRAC-1:0] circ_6_msg_data_out;
@@ -516,7 +516,7 @@ circ_6_msg circ_6_msg_inst(
 .doutb(circ_6_msg_data_out)
 );
 
-wire [log2circ:0] circ_7_msg_addr_r;
+wire [log2circ-1:0] circ_7_msg_addr_r;
 assign circ_7_msg_addr_r = (chk_r)? circ+circ_7_data: circ_7_data;
 wire [INT+FRAC-1:0] circ_7_msg_data_in;
 wire [INT+FRAC-1:0] circ_7_msg_data_out;
@@ -530,7 +530,7 @@ circ_7_msg circ_7_msg_inst(
 .doutb(circ_7_msg_data_out)
 );
 
-wire [log2circ:0] circ_8_msg_addr_r;
+wire [log2circ-1:0] circ_8_msg_addr_r;
 assign circ_8_msg_addr_r = (chk_r)? circ+circ_8_data: circ_8_data;
 wire [INT+FRAC-1:0] circ_8_msg_data_in;
 wire [INT+FRAC-1:0] circ_8_msg_data_out;
@@ -544,7 +544,7 @@ circ_8_msg circ_8_msg_inst(
 .doutb(circ_8_msg_data_out)
 );
 
-wire [log2circ:0] circ_9_msg_addr_r;
+wire [log2circ-1:0] circ_9_msg_addr_r;
 assign circ_9_msg_addr_r = (chk_r)? circ+circ_9_data: circ_9_data;
 wire [INT+FRAC-1:0] circ_9_msg_data_in;
 wire [INT+FRAC-1:0] circ_9_msg_data_out;
@@ -558,7 +558,7 @@ circ_9_msg circ_9_msg_inst(
 .doutb(circ_9_msg_data_out)
 );
 
-wire [log2circ:0] circ_10_msg_addr_r;
+wire [log2circ-1:0] circ_10_msg_addr_r;
 assign circ_10_msg_addr_r = (chk_r)? circ+circ_10_data: circ_10_data;
 wire [INT+FRAC-1:0] circ_10_msg_data_in;
 wire [INT+FRAC-1:0] circ_10_msg_data_out;
@@ -572,7 +572,7 @@ circ_10_msg circ_10_msg_inst(
 .doutb(circ_10_msg_data_out)
 );
 
-wire [log2circ:0] circ_11_msg_addr_r;
+wire [log2circ-1:0] circ_11_msg_addr_r;
 assign circ_11_msg_addr_r = (chk_r)? circ+circ_11_data: circ_11_data;
 wire [INT+FRAC-1:0] circ_11_msg_data_in;
 wire [INT+FRAC-1:0] circ_11_msg_data_out;
@@ -586,7 +586,7 @@ circ_11_msg circ_11_msg_inst(
 .doutb(circ_11_msg_data_out)
 );
 
-wire [log2circ:0] circ_12_msg_addr_r;
+wire [log2circ-1:0] circ_12_msg_addr_r;
 assign circ_12_msg_addr_r = (chk_r)? circ+circ_12_data: circ_12_data;
 wire [INT+FRAC-1:0] circ_12_msg_data_in;
 wire [INT+FRAC-1:0] circ_12_msg_data_out;
@@ -600,7 +600,7 @@ circ_12_msg circ_12_msg_inst(
 .doutb(circ_12_msg_data_out)
 );
 
-wire [log2circ:0] circ_13_msg_addr_r;
+wire [log2circ-1:0] circ_13_msg_addr_r;
 assign circ_13_msg_addr_r = (chk_r)? circ+circ_13_data: circ_13_data;
 wire [INT+FRAC-1:0] circ_13_msg_data_in;
 wire [INT+FRAC-1:0] circ_13_msg_data_out;
@@ -614,7 +614,7 @@ circ_13_msg circ_13_msg_inst(
 .doutb(circ_13_msg_data_out)
 );
 
-wire [log2circ:0] circ_14_msg_addr_r;
+wire [log2circ-1:0] circ_14_msg_addr_r;
 assign circ_14_msg_addr_r = (chk_r)? circ+circ_14_data: circ_14_data;
 wire [INT+FRAC-1:0] circ_14_msg_data_in;
 wire [INT+FRAC-1:0] circ_14_msg_data_out;
@@ -628,7 +628,7 @@ circ_14_msg circ_14_msg_inst(
 .doutb(circ_14_msg_data_out)
 );
 
-wire [log2circ:0] circ_15_msg_addr_r;
+wire [log2circ-1:0] circ_15_msg_addr_r;
 assign circ_15_msg_addr_r = (chk_r)? circ+circ_15_data: circ_15_data;
 wire [INT+FRAC-1:0] circ_15_msg_data_in;
 wire [INT+FRAC-1:0] circ_15_msg_data_out;
@@ -642,7 +642,7 @@ circ_15_msg circ_15_msg_inst(
 .doutb(circ_15_msg_data_out)
 );
 
-wire [log2circ:0] circ_16_msg_addr_r;
+wire [log2circ-1:0] circ_16_msg_addr_r;
 assign circ_16_msg_addr_r = (chk_r)? circ+circ_16_data: circ_16_data;
 wire [INT+FRAC-1:0] circ_16_msg_data_in;
 wire [INT+FRAC-1:0] circ_16_msg_data_out;
@@ -656,7 +656,7 @@ circ_16_msg circ_16_msg_inst(
 .doutb(circ_16_msg_data_out)
 );
 
-wire [log2circ:0] circ_17_msg_addr_r;
+wire [log2circ-1:0] circ_17_msg_addr_r;
 assign circ_17_msg_addr_r = (chk_r)? circ+circ_17_data: circ_17_data;
 wire [INT+FRAC-1:0] circ_17_msg_data_in;
 wire [INT+FRAC-1:0] circ_17_msg_data_out;
@@ -670,7 +670,7 @@ circ_17_msg circ_17_msg_inst(
 .doutb(circ_17_msg_data_out)
 );
 
-wire [log2circ:0] circ_18_msg_addr_r;
+wire [log2circ-1:0] circ_18_msg_addr_r;
 assign circ_18_msg_addr_r = (chk_r)? circ+circ_18_data: circ_18_data;
 wire [INT+FRAC-1:0] circ_18_msg_data_in;
 wire [INT+FRAC-1:0] circ_18_msg_data_out;
@@ -684,7 +684,7 @@ circ_18_msg circ_18_msg_inst(
 .doutb(circ_18_msg_data_out)
 );
 
-wire [log2circ:0] circ_19_msg_addr_r;
+wire [log2circ-1:0] circ_19_msg_addr_r;
 assign circ_19_msg_addr_r = (chk_r)? circ+circ_19_data: circ_19_data;
 wire [INT+FRAC-1:0] circ_19_msg_data_in;
 wire [INT+FRAC-1:0] circ_19_msg_data_out;
@@ -698,7 +698,7 @@ circ_19_msg circ_19_msg_inst(
 .doutb(circ_19_msg_data_out)
 );
 
-wire [log2circ:0] circ_20_msg_addr_r;
+wire [log2circ-1:0] circ_20_msg_addr_r;
 assign circ_20_msg_addr_r = (chk_r)? circ+circ_20_data: circ_20_data;
 wire [INT+FRAC-1:0] circ_20_msg_data_in;
 wire [INT+FRAC-1:0] circ_20_msg_data_out;
@@ -712,7 +712,7 @@ circ_20_msg circ_20_msg_inst(
 .doutb(circ_20_msg_data_out)
 );
 
-wire [log2circ:0] circ_21_msg_addr_r;
+wire [log2circ-1:0] circ_21_msg_addr_r;
 assign circ_21_msg_addr_r = (chk_r)? circ+circ_21_data: circ_21_data;
 wire [INT+FRAC-1:0] circ_21_msg_data_in;
 wire [INT+FRAC-1:0] circ_21_msg_data_out;
@@ -726,7 +726,7 @@ circ_21_msg circ_21_msg_inst(
 .doutb(circ_21_msg_data_out)
 );
 
-wire [log2circ:0] circ_22_msg_addr_r;
+wire [log2circ-1:0] circ_22_msg_addr_r;
 assign circ_22_msg_addr_r = (chk_r)? circ+circ_22_data: circ_22_data;
 wire [INT+FRAC-1:0] circ_22_msg_data_in;
 wire [INT+FRAC-1:0] circ_22_msg_data_out;
@@ -740,7 +740,7 @@ circ_22_msg circ_22_msg_inst(
 .doutb(circ_22_msg_data_out)
 );
 
-wire [log2circ:0] circ_23_msg_addr_r;
+wire [log2circ-1:0] circ_23_msg_addr_r;
 assign circ_23_msg_addr_r = (chk_r)? circ+circ_23_data: circ_23_data;
 wire [INT+FRAC-1:0] circ_23_msg_data_in;
 wire [INT+FRAC-1:0] circ_23_msg_data_out;
@@ -754,7 +754,7 @@ circ_23_msg circ_23_msg_inst(
 .doutb(circ_23_msg_data_out)
 );
 
-wire [log2circ:0] circ_24_msg_addr_r;
+wire [log2circ-1:0] circ_24_msg_addr_r;
 assign circ_24_msg_addr_r = (chk_r)? circ+circ_24_data: circ_24_data;
 wire [INT+FRAC-1:0] circ_24_msg_data_in;
 wire [INT+FRAC-1:0] circ_24_msg_data_out;
@@ -768,7 +768,7 @@ circ_24_msg circ_24_msg_inst(
 .doutb(circ_24_msg_data_out)
 );
 
-wire [log2circ:0] circ_25_msg_addr_r;
+wire [log2circ-1:0] circ_25_msg_addr_r;
 assign circ_25_msg_addr_r = (chk_r)? circ+circ_25_data: circ_25_data;
 wire [INT+FRAC-1:0] circ_25_msg_data_in;
 wire [INT+FRAC-1:0] circ_25_msg_data_out;
@@ -782,7 +782,7 @@ circ_25_msg circ_25_msg_inst(
 .doutb(circ_25_msg_data_out)
 );
 
-wire [log2circ:0] circ_26_msg_addr_r;
+wire [log2circ-1:0] circ_26_msg_addr_r;
 assign circ_26_msg_addr_r = (chk_r)? circ+circ_26_data: circ_26_data;
 wire [INT+FRAC-1:0] circ_26_msg_data_in;
 wire [INT+FRAC-1:0] circ_26_msg_data_out;
@@ -796,7 +796,7 @@ circ_26_msg circ_26_msg_inst(
 .doutb(circ_26_msg_data_out)
 );
 
-wire [log2circ:0] circ_27_msg_addr_r;
+wire [log2circ-1:0] circ_27_msg_addr_r;
 assign circ_27_msg_addr_r = (chk_r)? circ+circ_27_data: circ_27_data;
 wire [INT+FRAC-1:0] circ_27_msg_data_in;
 wire [INT+FRAC-1:0] circ_27_msg_data_out;
@@ -810,7 +810,7 @@ circ_27_msg circ_27_msg_inst(
 .doutb(circ_27_msg_data_out)
 );
 
-wire [log2circ:0] circ_28_msg_addr_r;
+wire [log2circ-1:0] circ_28_msg_addr_r;
 assign circ_28_msg_addr_r = (chk_r)? circ+circ_28_data: circ_28_data;
 wire [INT+FRAC-1:0] circ_28_msg_data_in;
 wire [INT+FRAC-1:0] circ_28_msg_data_out;
@@ -824,7 +824,7 @@ circ_28_msg circ_28_msg_inst(
 .doutb(circ_28_msg_data_out)
 );
 
-wire [log2circ:0] circ_29_msg_addr_r;
+wire [log2circ-1:0] circ_29_msg_addr_r;
 assign circ_29_msg_addr_r = (chk_r)? circ+circ_29_data: circ_29_data;
 wire [INT+FRAC-1:0] circ_29_msg_data_in;
 wire [INT+FRAC-1:0] circ_29_msg_data_out;
@@ -838,7 +838,7 @@ circ_29_msg circ_29_msg_inst(
 .doutb(circ_29_msg_data_out)
 );
 
-wire [log2circ:0] circ_30_msg_addr_r;
+wire [log2circ-1:0] circ_30_msg_addr_r;
 assign circ_30_msg_addr_r = (chk_r)? circ+circ_30_data: circ_30_data;
 wire [INT+FRAC-1:0] circ_30_msg_data_in;
 wire [INT+FRAC-1:0] circ_30_msg_data_out;
@@ -852,7 +852,7 @@ circ_30_msg circ_30_msg_inst(
 .doutb(circ_30_msg_data_out)
 );
 
-wire [log2circ:0] circ_31_msg_addr_r;
+wire [log2circ-1:0] circ_31_msg_addr_r;
 assign circ_31_msg_addr_r = (chk_r)? circ+circ_31_data: circ_31_data;
 wire [INT+FRAC-1:0] circ_31_msg_data_in;
 wire [INT+FRAC-1:0] circ_31_msg_data_out;
@@ -866,7 +866,7 @@ circ_31_msg circ_31_msg_inst(
 .doutb(circ_31_msg_data_out)
 );
 
-wire [log2circ:0] circ_32_msg_addr_r;
+wire [log2circ-1:0] circ_32_msg_addr_r;
 assign circ_32_msg_addr_r = (chk_r)? circ+circ_32_data: circ_32_data;
 wire [INT+FRAC-1:0] circ_32_msg_data_in;
 wire [INT+FRAC-1:0] circ_32_msg_data_out;
@@ -880,7 +880,7 @@ circ_32_msg circ_32_msg_inst(
 .doutb(circ_32_msg_data_out)
 );
 
-wire [log2circ:0] circ_33_msg_addr_r;
+wire [log2circ-1:0] circ_33_msg_addr_r;
 assign circ_33_msg_addr_r = (chk_r)? circ+circ_33_data: circ_33_data;
 wire [INT+FRAC-1:0] circ_33_msg_data_in;
 wire [INT+FRAC-1:0] circ_33_msg_data_out;
@@ -894,7 +894,7 @@ circ_33_msg circ_33_msg_inst(
 .doutb(circ_33_msg_data_out)
 );
 
-wire [log2circ:0] circ_34_msg_addr_r;
+wire [log2circ-1:0] circ_34_msg_addr_r;
 assign circ_34_msg_addr_r = (chk_r)? circ+circ_34_data: circ_34_data;
 wire [INT+FRAC-1:0] circ_34_msg_data_in;
 wire [INT+FRAC-1:0] circ_34_msg_data_out;
@@ -908,7 +908,7 @@ circ_34_msg circ_34_msg_inst(
 .doutb(circ_34_msg_data_out)
 );
 
-wire [log2circ:0] circ_35_msg_addr_r;
+wire [log2circ-1:0] circ_35_msg_addr_r;
 assign circ_35_msg_addr_r = (chk_r)? circ+circ_35_data: circ_35_data;
 wire [INT+FRAC-1:0] circ_35_msg_data_in;
 wire [INT+FRAC-1:0] circ_35_msg_data_out;
@@ -922,7 +922,7 @@ circ_35_msg circ_35_msg_inst(
 .doutb(circ_35_msg_data_out)
 );
 
-wire [log2circ:0] circ_36_msg_addr_r;
+wire [log2circ-1:0] circ_36_msg_addr_r;
 assign circ_36_msg_addr_r = (chk_r)? circ+circ_36_data: circ_36_data;
 wire [INT+FRAC-1:0] circ_36_msg_data_in;
 wire [INT+FRAC-1:0] circ_36_msg_data_out;
@@ -936,7 +936,7 @@ circ_36_msg circ_36_msg_inst(
 .doutb(circ_36_msg_data_out)
 );
 
-wire [log2circ:0] circ_37_msg_addr_r;
+wire [log2circ-1:0] circ_37_msg_addr_r;
 assign circ_37_msg_addr_r = (chk_r)? circ+circ_37_data: circ_37_data;
 wire [INT+FRAC-1:0] circ_37_msg_data_in;
 wire [INT+FRAC-1:0] circ_37_msg_data_out;
@@ -950,7 +950,7 @@ circ_37_msg circ_37_msg_inst(
 .doutb(circ_37_msg_data_out)
 );
 
-wire [log2circ:0] circ_38_msg_addr_r;
+wire [log2circ-1:0] circ_38_msg_addr_r;
 assign circ_38_msg_addr_r = (chk_r)? circ+circ_38_data: circ_38_data;
 wire [INT+FRAC-1:0] circ_38_msg_data_in;
 wire [INT+FRAC-1:0] circ_38_msg_data_out;
@@ -964,7 +964,7 @@ circ_38_msg circ_38_msg_inst(
 .doutb(circ_38_msg_data_out)
 );
 
-wire [log2circ:0] circ_39_msg_addr_r;
+wire [log2circ-1:0] circ_39_msg_addr_r;
 assign circ_39_msg_addr_r = (chk_r)? circ+circ_39_data: circ_39_data;
 wire [INT+FRAC-1:0] circ_39_msg_data_in;
 wire [INT+FRAC-1:0] circ_39_msg_data_out;
@@ -978,7 +978,7 @@ circ_39_msg circ_39_msg_inst(
 .doutb(circ_39_msg_data_out)
 );
 
-wire [log2circ:0] circ_40_msg_addr_r;
+wire [log2circ-1:0] circ_40_msg_addr_r;
 assign circ_40_msg_addr_r = (chk_r)? circ+circ_40_data: circ_40_data;
 wire [INT+FRAC-1:0] circ_40_msg_data_in;
 wire [INT+FRAC-1:0] circ_40_msg_data_out;
@@ -992,7 +992,7 @@ circ_40_msg circ_40_msg_inst(
 .doutb(circ_40_msg_data_out)
 );
 
-wire [log2circ:0] circ_41_msg_addr_r;
+wire [log2circ-1:0] circ_41_msg_addr_r;
 assign circ_41_msg_addr_r = (chk_r)? circ+circ_41_data: circ_41_data;
 wire [INT+FRAC-1:0] circ_41_msg_data_in;
 wire [INT+FRAC-1:0] circ_41_msg_data_out;
@@ -1006,7 +1006,7 @@ circ_41_msg circ_41_msg_inst(
 .doutb(circ_41_msg_data_out)
 );
 
-wire [log2circ:0] circ_42_msg_addr_r;
+wire [log2circ-1:0] circ_42_msg_addr_r;
 assign circ_42_msg_addr_r = (chk_r)? circ+circ_42_data: circ_42_data;
 wire [INT+FRAC-1:0] circ_42_msg_data_in;
 wire [INT+FRAC-1:0] circ_42_msg_data_out;
@@ -1020,7 +1020,7 @@ circ_42_msg circ_42_msg_inst(
 .doutb(circ_42_msg_data_out)
 );
 
-wire [log2circ:0] circ_43_msg_addr_r;
+wire [log2circ-1:0] circ_43_msg_addr_r;
 assign circ_43_msg_addr_r = (chk_r)? circ+circ_43_data: circ_43_data;
 wire [INT+FRAC-1:0] circ_43_msg_data_in;
 wire [INT+FRAC-1:0] circ_43_msg_data_out;
@@ -1034,7 +1034,7 @@ circ_43_msg circ_43_msg_inst(
 .doutb(circ_43_msg_data_out)
 );
 
-wire [log2circ:0] circ_44_msg_addr_r;
+wire [log2circ-1:0] circ_44_msg_addr_r;
 assign circ_44_msg_addr_r = (chk_r)? circ+circ_44_data: circ_44_data;
 wire [INT+FRAC-1:0] circ_44_msg_data_in;
 wire [INT+FRAC-1:0] circ_44_msg_data_out;
@@ -1048,7 +1048,7 @@ circ_44_msg circ_44_msg_inst(
 .doutb(circ_44_msg_data_out)
 );
 
-wire [log2circ:0] circ_45_msg_addr_r;
+wire [log2circ-1:0] circ_45_msg_addr_r;
 assign circ_45_msg_addr_r = (chk_r)? circ+circ_45_data: circ_45_data;
 wire [INT+FRAC-1:0] circ_45_msg_data_in;
 wire [INT+FRAC-1:0] circ_45_msg_data_out;
@@ -1062,7 +1062,7 @@ circ_45_msg circ_45_msg_inst(
 .doutb(circ_45_msg_data_out)
 );
 
-wire [log2circ:0] circ_46_msg_addr_r;
+wire [log2circ-1:0] circ_46_msg_addr_r;
 assign circ_46_msg_addr_r = (chk_r)? circ+circ_46_data: circ_46_data;
 wire [INT+FRAC-1:0] circ_46_msg_data_in;
 wire [INT+FRAC-1:0] circ_46_msg_data_out;
@@ -1076,7 +1076,7 @@ circ_46_msg circ_46_msg_inst(
 .doutb(circ_46_msg_data_out)
 );
 
-wire [log2circ:0] circ_47_msg_addr_r;
+wire [log2circ-1:0] circ_47_msg_addr_r;
 assign circ_47_msg_addr_r = (chk_r)? circ+circ_47_data: circ_47_data;
 wire [INT+FRAC-1:0] circ_47_msg_data_in;
 wire [INT+FRAC-1:0] circ_47_msg_data_out;
@@ -1090,7 +1090,7 @@ circ_47_msg circ_47_msg_inst(
 .doutb(circ_47_msg_data_out)
 );
 
-wire [log2circ:0] circ_48_msg_addr_r;
+wire [log2circ-1:0] circ_48_msg_addr_r;
 assign circ_48_msg_addr_r = (chk_r)? circ+circ_48_data: circ_48_data;
 wire [INT+FRAC-1:0] circ_48_msg_data_in;
 wire [INT+FRAC-1:0] circ_48_msg_data_out;
@@ -1104,7 +1104,7 @@ circ_48_msg circ_48_msg_inst(
 .doutb(circ_48_msg_data_out)
 );
 
-wire [log2circ:0] circ_49_msg_addr_r;
+wire [log2circ-1:0] circ_49_msg_addr_r;
 assign circ_49_msg_addr_r = (chk_r)? circ+circ_49_data: circ_49_data;
 wire [INT+FRAC-1:0] circ_49_msg_data_in;
 wire [INT+FRAC-1:0] circ_49_msg_data_out;
@@ -1118,7 +1118,7 @@ circ_49_msg circ_49_msg_inst(
 .doutb(circ_49_msg_data_out)
 );
 
-wire [log2circ:0] circ_50_msg_addr_r;
+wire [log2circ-1:0] circ_50_msg_addr_r;
 assign circ_50_msg_addr_r = (chk_r)? circ+circ_50_data: circ_50_data;
 wire [INT+FRAC-1:0] circ_50_msg_data_in;
 wire [INT+FRAC-1:0] circ_50_msg_data_out;
@@ -1132,7 +1132,7 @@ circ_50_msg circ_50_msg_inst(
 .doutb(circ_50_msg_data_out)
 );
 
-wire [log2circ:0] circ_51_msg_addr_r;
+wire [log2circ-1:0] circ_51_msg_addr_r;
 assign circ_51_msg_addr_r = (chk_r)? circ+circ_51_data: circ_51_data;
 wire [INT+FRAC-1:0] circ_51_msg_data_in;
 wire [INT+FRAC-1:0] circ_51_msg_data_out;
@@ -1146,7 +1146,7 @@ circ_51_msg circ_51_msg_inst(
 .doutb(circ_51_msg_data_out)
 );
 
-wire [log2circ:0] circ_52_msg_addr_r;
+wire [log2circ-1:0] circ_52_msg_addr_r;
 assign circ_52_msg_addr_r = (chk_r)? circ+circ_52_data: circ_52_data;
 wire [INT+FRAC-1:0] circ_52_msg_data_in;
 wire [INT+FRAC-1:0] circ_52_msg_data_out;
@@ -1160,7 +1160,7 @@ circ_52_msg circ_52_msg_inst(
 .doutb(circ_52_msg_data_out)
 );
 
-wire [log2circ:0] circ_53_msg_addr_r;
+wire [log2circ-1:0] circ_53_msg_addr_r;
 assign circ_53_msg_addr_r = (chk_r)? circ+circ_53_data: circ_53_data;
 wire [INT+FRAC-1:0] circ_53_msg_data_in;
 wire [INT+FRAC-1:0] circ_53_msg_data_out;
@@ -1174,7 +1174,7 @@ circ_53_msg circ_53_msg_inst(
 .doutb(circ_53_msg_data_out)
 );
 
-wire [log2circ:0] circ_54_msg_addr_r;
+wire [log2circ-1:0] circ_54_msg_addr_r;
 assign circ_54_msg_addr_r = (chk_r)? circ+circ_54_data: circ_54_data;
 wire [INT+FRAC-1:0] circ_54_msg_data_in;
 wire [INT+FRAC-1:0] circ_54_msg_data_out;
@@ -1188,7 +1188,7 @@ circ_54_msg circ_54_msg_inst(
 .doutb(circ_54_msg_data_out)
 );
 
-wire [log2circ:0] circ_55_msg_addr_r;
+wire [log2circ-1:0] circ_55_msg_addr_r;
 assign circ_55_msg_addr_r = (chk_r)? circ+circ_55_data: circ_55_data;
 wire [INT+FRAC-1:0] circ_55_msg_data_in;
 wire [INT+FRAC-1:0] circ_55_msg_data_out;
@@ -1202,7 +1202,7 @@ circ_55_msg circ_55_msg_inst(
 .doutb(circ_55_msg_data_out)
 );
 
-wire [log2circ:0] circ_56_msg_addr_r;
+wire [log2circ-1:0] circ_56_msg_addr_r;
 assign circ_56_msg_addr_r = (chk_r)? circ+circ_56_data: circ_56_data;
 wire [INT+FRAC-1:0] circ_56_msg_data_in;
 wire [INT+FRAC-1:0] circ_56_msg_data_out;
@@ -1216,7 +1216,7 @@ circ_56_msg circ_56_msg_inst(
 .doutb(circ_56_msg_data_out)
 );
 
-wire [log2circ:0] circ_57_msg_addr_r;
+wire [log2circ-1:0] circ_57_msg_addr_r;
 assign circ_57_msg_addr_r = (chk_r)? circ+circ_57_data: circ_57_data;
 wire [INT+FRAC-1:0] circ_57_msg_data_in;
 wire [INT+FRAC-1:0] circ_57_msg_data_out;
@@ -1622,7 +1622,7 @@ cn cn_1_inst (
 .msg_out_7(circ_7_msg_data_cn),
 .msg_out_8(circ_8_msg_data_cn),
 .msg_out_9(circ_9_msg_data_cn),
-.msg_out_10(circ_10_msg_data_cn),
+.msg_out_10(circ_10_msg_data_cn)
 );
 
 cn cn_2_inst (
@@ -1668,7 +1668,7 @@ cn cn_3_inst (
 .msg_out_7(circ_26_msg_data_cn),
 .msg_out_8(circ_27_msg_data_cn),
 .msg_out_9(circ_28_msg_data_cn),
-.msg_out_10(circ_29_msg_data_cn),
+.msg_out_10(circ_29_msg_data_cn)
 );
 
 cn cn_4_inst (
@@ -1777,13 +1777,13 @@ cn cn_8_inst (
 .msg_out_1(circ_54_msg_data_cn),
 .msg_out_2(circ_55_msg_data_cn),
 .msg_out_3(circ_56_msg_data_cn),
-.msg_out_4(),
+.msg_out_4(circ_57_msg_data_cn),
 .msg_out_5(),
 .msg_out_6(),
 .msg_out_7(),
 .msg_out_8(),
 .msg_out_9(),
-.msg_out_10(circ_57_msg_data_cn)
+.msg_out_10()
 );
 
 
@@ -2191,13 +2191,13 @@ vr vn_16_inst (
 );
 
 
-always @(posedge clk or posedge rst) begin
+always @(posedge clk) begin
 	if (rst) begin
-		FSM <= 0;
+		FSM <= 1;
 		circ_iter <= 0;
 		iter_num <= 0;
 
-		nop <= 0;
+		nop <= 1;
 
 		success_dec <= 0;
 		dec_cw <= data;
@@ -2206,18 +2206,18 @@ always @(posedge clk or posedge rst) begin
 		chk_w <= 0;		
 	end
 
-	else if (FSM == 0) begin
+	else if (FSM == 1) begin
 		if(circ_iter == circ) begin
-			if(nop == 0) begin
+			if(nop == 1) begin
 				if(non_zero_syn) begin
-					FSM <= 1;
+					FSM <= 2;
 
 					chk_r <= 1;
 				
 					non_zero_syn <= 0;
 				end
 				else begin
-					FSM <= 3;
+					FSM <= 8;
 				end
 			
 				circ_iter <= 0;
@@ -2228,11 +2228,11 @@ always @(posedge clk or posedge rst) begin
 					non_zero_syn <= 1;
 				end
 
-				nop <= 0;
+				nop <= 1;
 			end
 		end
 		else begin
-			if(nop == 1) begin
+			if(nop == 2) begin
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
@@ -2240,21 +2240,21 @@ always @(posedge clk or posedge rst) begin
 
 			circ_iter <= circ_iter + 1;
 
-			nop <= 1;
+			nop <= 2;
 		end
 	end
 
 	// Update Variable Node messages
-	else if (FSM == 1) begin
+	else if (FSM == 2) begin
 		if(circ_iter == circ) begin
-			if(nop == 2) begin
+			if(nop == 4) begin
 				circ_iter_ <= circ_iter_ + 1;
 
-				nop <= 1;
+				nop <= 2;
 			end
-			else if (nop == 1) begin
-				nop <= 0;
-				FSM <= 2;
+			else if (nop == 2) begin
+				nop <= 1;
+				FSM <= 4;
 
 				chk_r <= 0;
 				chk_w <= 1;
@@ -2281,7 +2281,7 @@ always @(posedge clk or posedge rst) begin
 			dec_cw[15*circ+circ_iter_] <= dec_bit_16;
 		end
 		else begin
-			if(nop == 2) begin
+			if(nop == 4) begin
 				circ_iter_ <= circ_iter_ + 1;
 
 				dec_cw[0*circ+circ_iter_] <= dec_bit_1;
@@ -2301,11 +2301,11 @@ always @(posedge clk or posedge rst) begin
 				dec_cw[14*circ+circ_iter_] <= dec_bit_15;
 				dec_cw[15*circ+circ_iter_] <= dec_bit_16;
 			end
-			else if (nop == 1) begin
-				nop <= 2;
+			else if (nop == 2) begin
+				nop <= 4;
 			end
 			else begin
-				nop <= 1;
+				nop <= 2;
 			end
 
 			circ_iter <= circ_iter + 1;
@@ -2313,22 +2313,22 @@ always @(posedge clk or posedge rst) begin
 	end
 
 	// Update Check Node messages
-	else if (FSM == 2) begin
+	else if (FSM == 4) begin
 		if(circ_iter == circ) begin
-			if(nop == 2) begin
+			if(nop == 4) begin
 				circ_iter_ <= circ_iter_ + 1;
 
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
 
-				nop <= 1;
+				nop <= 2;
 			end
-			else if (nop == 1) begin
+			else if (nop == 2) begin
 				if(non_zero_syn) begin
 					if(iter_num < max_iter) begin
-						nop <= 0;
-						FSM <= 1;
+						nop <= 1;
+						FSM <= 2;
 
 						chk_r <= 1;
 						chk_w <= 0;
@@ -2341,41 +2341,41 @@ always @(posedge clk or posedge rst) begin
 						circ_iter_ <= 0;
 					end
 					else begin
-						FSM <= 4;
+						FSM <= 16;
 					end
 				end
 				else begin
-					FSM <= 3;
+					FSM <= 8;
 				end
 			end
 		end
 		else begin
-			if(nop == 2) begin
+			if(nop == 4) begin
 				circ_iter_ <= circ_iter_ + 1;
 
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
 			end
-			else if (nop == 1) begin
+			else if (nop == 2) begin
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
 
-				nop <= 2;
+				nop <= 4;
 			end
 			else begin
-				nop <= 1;
+				nop <= 2;
 			end
 
 			circ_iter <= circ_iter + 1;
 		end
 	end
 
-	else if (FSM == 3) begin
+	else if (FSM == 8) begin
 		success_dec <= 1;
 	end
-	else if (FSM == 4) begin
+	else if (FSM == 16) begin
 		success_dec <= 0;
 	end
 end

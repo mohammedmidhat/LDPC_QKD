@@ -31,7 +31,7 @@ min min_to_v1_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_1)
+	.msg(msg_out_1)
 	);
 
 min min_to_v2_inst (
@@ -44,7 +44,7 @@ min min_to_v2_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_2)
+	.msg(msg_out_2)
 	);
 
 min min_to_v3_inst (
@@ -57,7 +57,7 @@ min min_to_v3_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_3)
+	.msg(msg_out_3)
 	);
 
 min min_to_v4_inst (
@@ -70,7 +70,7 @@ min min_to_v4_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_4)
+	.msg(msg_out_4)
 	);
 
 min min_to_v5_inst (
@@ -83,7 +83,7 @@ min min_to_v5_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_5)
+	.msg(msg_out_5)
 	);
 
 min min_to_v6_inst (
@@ -96,7 +96,7 @@ min min_to_v6_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_6)
+	.msg(msg_out_6)
 	);
 
 min min_to_v7_inst (
@@ -109,7 +109,7 @@ min min_to_v7_inst (
 	.msg_7(msg_in_8),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_7)
+	.msg(msg_out_7)
 	);
 
 min min_to_v8_inst (
@@ -122,7 +122,7 @@ min min_to_v8_inst (
 	.msg_7(msg_in_7),
 	.msg_8(msg_in_9),
 	.msg_9(msg_in_10),
-	.msg (msg_out_8)
+	.msg(msg_out_8)
 	);
 
 min min_to_v9_inst (
@@ -135,7 +135,7 @@ min min_to_v9_inst (
 	.msg_7(msg_in_7),
 	.msg_8(msg_in_8),
 	.msg_9(msg_in_10),
-	.msg (msg_out_9)
+	.msg(msg_out_9)
 	);
 
 min min_to_v10_inst (
@@ -148,7 +148,7 @@ min min_to_v10_inst (
 	.msg_7(msg_in_7),
 	.msg_8(msg_in_8),
 	.msg_9(msg_in_9),
-	.msg (msg_out_10)
+	.msg(msg_out_10)
 	);
 
 endmodule

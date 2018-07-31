@@ -1,10 +1,10 @@
-always @(posedge clk or posedge rst) begin
+always @(posedge clk) begin
 	if (rst) begin
-		FSM <= 0;
+		FSM <= 1;
 		circ_iter <= 0;
 		iter_num <= 0;
 
-		nop <= 0;
+		nop <= 1;
 
 		success_dec <= 0;
 		dec_cw <= data;
@@ -13,18 +13,18 @@ always @(posedge clk or posedge rst) begin
 		chk_w <= 0;		
 	end
 
-	else if (FSM == 0) begin
+	else if (FSM == 1) begin
 		if(circ_iter == circ) begin
-			if(nop == 0) begin
+			if(nop == 1) begin
 				if(non_zero_syn) begin
-					FSM <= 1;
+					FSM <= 2;
 
 					chk_r <= 1;
 				
 					non_zero_syn <= 0;
 				end
 				else begin
-					FSM <= 3;
+					FSM <= 8;
 				end
 			
 				circ_iter <= 0;
@@ -35,11 +35,11 @@ always @(posedge clk or posedge rst) begin
 					non_zero_syn <= 1;
 				end
 
-				nop <= 0;
+				nop <= 1;
 			end
 		end
 		else begin
-			if(nop == 1) begin
+			if(nop == 2) begin
 				if(syn_res) begin
 					non_zero_syn <= 1;
 				end
@@ -47,21 +47,21 @@ always @(posedge clk or posedge rst) begin
 
 			circ_iter <= circ_iter + 1;
 
-			nop <= 1;
+			nop <= 2;
 		end
 	end
 
 	// Update Variable Node messages
-	else if (FSM == 1) begin
+	else if (FSM == 2) begin
 		if(circ_iter == circ) begin
-			if(nop == 2) begin
+			if(nop == 4) begin
 				circ_iter_ <= circ_iter_ + 1;
 
-				nop <= 1;
+				nop <= 2;
 			end
-			else if (nop == 1) begin
-				nop <= 0;
-				FSM <= 2;
+			else if (nop == 2) begin
+				nop <= 1;
+				FSM <= 4;
 
 				chk_r <= 0;
 				chk_w <= 1;
