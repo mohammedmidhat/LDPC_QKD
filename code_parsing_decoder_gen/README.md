@@ -1,11 +1,27 @@
-# LDPC_QKD
-# This is a binary LDPC decoder in Verilog written initially for the Xilinx VC707 FPGA board
+# LDPC_DEC
+# This is the generating scripts directory
 
-# The project includes the decoder FPGA files (Verilog + BRAM data .coe file)
-# It also includes Python scripts to generate the Verilog source and BRAM .coe files
+alist_code_files/
+Has the LDPC in the alist format
 
-# sat_adder/
-# has Verilog module for a 2-input adder with saturation, so if the summation result overflows,
-# the n-bit adder result will be saturated to the highest or least value in the n-bit range.
+belief_propg_Verilog_syntax/
+Has snippets of the decoder Verilog code. These snippets are used by decoder_files_gen.py
+These snippets are static. i.e. they don't depend on the LDPC code
 
-# 
+bram_code_msg_coe_file/
+Where the geenrated .coe files live
+
+decoder_Verilog_files/
+Where the generated Verilog files live
+
+decoder_files_gen.py
+Generates Verilog files
+
+BRAM_data_gen_LDPC_par.py
+Generate .coe files including the non-zero circulant data files
+and a msg.coe file initialized with all-zero rows
+
+code_parsing_testbench.m
+Compares the generated .coe files against the LDPC code in the alist format
+It uses alist_to_mat.m to fetch the code from the alist format file into an array
+variable in Matlab
