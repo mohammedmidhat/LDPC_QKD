@@ -12,7 +12,7 @@ These snippets are static. i.e. they don't depend on the LDPC code
 Where the geenrated .coe files live
 
 **`decoder_Verilog_files/`**
-Where the generated Verilog files live
+Where the generated Verilog files live. There's also top.v in this dirtectory, which is not generated
 
 **`decoder_files_gen.py`**
 Generates Verilog files

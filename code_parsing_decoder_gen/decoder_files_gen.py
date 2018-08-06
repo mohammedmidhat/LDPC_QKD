@@ -6,7 +6,7 @@
 ## Note: The script assumes the neighbor indices are ordered
 ##       ascendingly in the alist code file
 ##
-## By:  Mohammed Al Ai Baky, 4/21/2018
+## Author:  Mohammed Al Ai Baky, 4/21/2018
 
 import math
 import os
@@ -563,7 +563,9 @@ decoder_f.write("`timescale 1ns / 1ps\n\n")
 decoder_f.write("module decoder_"+str(n)+"_"+str(m)+"_sim;\n\n")
 
 ## parameters
-decoder_f.write("\tparameter half_period = 2;\n")
+decoder_f.write("\tparameter clk_half_period_pre_div = 2.5;\n")
+decoder_f.write("\tparameter clk_div_factor = 200;\n")
+decoder_f.write("\tparameter clk_half_period_post_div = clk_half_period_pre_div*clk_div_factor;\n")
 decoder_f.write("\tparameter circ = "+str(circ_size)+";\n")
 decoder_f.write("\tparameter log2circ = "+str(log2circ_size)+";\n")
 decoder_f.write("\tparameter log2max_iter = "+str(log2max_iter)+";\n")
@@ -573,7 +575,8 @@ decoder_f.write("\tparameter FRAC = "+str(FRAC)+";\n\n")
 
 ## registers
 decoder_f.write("\t// Inputs\n")
-decoder_f.write("\treg clk;\n")
+decoder_f.write("\treg clk_p;\n")
+decoder_f.write("\treg clk_n;\n")
 decoder_f.write("\treg rst;\n")
 decoder_f.write("\treg [log2max_iter-1:0] iter_s;\n")
 decoder_f.write("\treg [log2circ-1:0] circ_iter_s;\n")
@@ -585,8 +588,9 @@ decoder_f.write("\twire success;\n")
 decoder_f.write("\twire [4:0] iterations;\n\n")
 
 ## DUT instantiation
-decoder_f.write("\tdecoder uut (\n")
-decoder_f.write("\t\t.clk(clk),\n")
+decoder_f.write("\ttop uut (\n")
+decoder_f.write("\t\t.clk_p(clk_p),\n")
+decoder_f.write("\t\t.clk_n(clk_n),\n")
 decoder_f.write("\t\t.rst(rst),\n")
 decoder_f.write("\t\t.success(success),\n")
 decoder_f.write("\t\t.iterations(iterations)\n")
@@ -594,45 +598,54 @@ decoder_f.write("\t);\n\n")
 
 ## clock gen
 decoder_f.write("\talways begin\n")
-decoder_f.write("\t#half_period clk <= ~clk;\n")
+decoder_f.write("\t#clk_half_period_pre_div clk_n <= ~clk_n;\n")
+decoder_f.write("\tend\n\n")
+decoder_f.write("\talways begin\n")
+decoder_f.write("\t#clk_half_period_pre_div clk_p <= ~clk_p;\n")
 decoder_f.write("\tend\n\n")
 
 ## initializing simulation variables
 decoder_f.write("\tinitial begin\n")
 decoder_f.write("\t\t// Initialize Inputs\n")
-decoder_f.write("\t\tclk = 0;\n")
+decoder_f.write("\t\tclk_p = 0;\n")
+decoder_f.write("\t\tclk_n = 1;\n")
 decoder_f.write("\t\trst = 0;\n")
 decoder_f.write("\t\ttog = 0;\t\t// For debugging the simulation\n\n")
-decoder_f.write("\t\t#1\n")
+decoder_f.write("\t\t#(clk_half_period_post_div/2)\n")
 decoder_f.write("\t\trst = 1;\n")
-decoder_f.write("\t\t#120\n")
+decoder_f.write("\t\t#(60*clk_half_period_post_div)\n")
 decoder_f.write("\t\trst = 0;\n")
 
 ## simulation tracking belief propagation logic flow
-decoder_f.write("\t\t#(2+(circ+1)*2*half_period)\t\t\t// 1+(circ-1)*half_period+2*half_period+1\n")
-decoder_f.write("\t\tif(uut.FSM == 3)begin\n")
+decoder_f.write("\t\t#(clk_half_period_post_div+(circ+1)*2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\ttog = ~tog;\n")
+decoder_f.write("\t\tif(uut.FSM == 3)begin\n")
 decoder_f.write("\t\t\t$display(\"already cw\");\n")
 decoder_f.write("\t\tend\n\n")
 decoder_f.write("\t\telse begin\n")
-decoder_f.write("\t\t\t#(2*half_period)\n")
+decoder_f.write("\t\t\t#(2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\tfor (iter_s = 0; iter_s < max_iter; iter_s = iter_s +1) begin\n")
 decoder_f.write("\t\t\t\tfor (circ_iter_s = 0; circ_iter_s < circ; circ_iter_s = circ_iter_s +1) begin\n")
-decoder_f.write("\t\t\t\t\t#(2*half_period)\n")
+decoder_f.write("\t\t\t\t\t#(2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\t\t\ttog = ~tog;\n")
 for i in range(num_non_zero_circ):              ## Prints 8-digit hex values
-    decoder_f.write("\t\t\t\t\t$display (\"%8h\", {{(INT+FRAC){uut.circ_"+str(i+1)+"_msg_data_in[INT+FRAC-1]}},uut.circ_"+str(i+1)+"_msg_data_in});\n")
+    decoder_f.write("\t\t\t\t\t$display (\"%8h\", {{(INT+FRAC){uut.decoder_inst.circ_"+str(i+1)+"_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_"+str(i+1)+"_msg_data_in});\n")
 decoder_f.write("\t\t\t\tend\n")
-decoder_f.write("\t\t\t\t#(2*2*half_period)\n")
+decoder_f.write("\t\t\t\t#(2*2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\t\tfor (circ_iter_s = 0; circ_iter_s < circ; circ_iter_s = circ_iter_s +1) begin\n")
-decoder_f.write("\t\t\t\t\t#(2*half_period)\n")
+decoder_f.write("\t\t\t\t\t#(2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\t\t\ttog = ~tog;\n")
 for i in range(num_non_zero_circ):              ## Prints 8-digit hex values
-    decoder_f.write("\t\t\t\t\t$display (\"%8h\", {{(INT+FRAC){uut.circ_"+str(i+1)+"_msg_data_in[INT+FRAC-1]}},uut.circ_"+str(i+1)+"_msg_data_in});\n")
+    decoder_f.write("\t\t\t\t\t$display (\"%8h\", {{(INT+FRAC){uut.decoder_inst.circ_"+str(i+1)+"_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_"+str(i+1)+"_msg_data_in});\n")
 decoder_f.write("\t\t\t\tend\n")
-decoder_f.write("\t\t\t\t#(2*2*half_period)\n")
+decoder_f.write("\t\t\t\t#(2*2*clk_half_period_post_div)\n")
 decoder_f.write("\t\t\t\ttog = tog;\n")
-decoder_f.write("\t\t\tend\n")
+decoder_f.write("\t\t\tend\n\n")
+decoder_f.write("\t\t\t// so you can manually verify 'success' gets deasserted\n")
+decoder_f.write("\t\t\t#(6*clk_half_period_post_div)\n")
+decoder_f.write("\t\t\trst = 1;\n")
+decoder_f.write("\t\t\t#(6*clk_half_period_post_div)\n")
+decoder_f.write("\t\t\trst = 0;\n")
 decoder_f.write("\t\tend\n")
 decoder_f.write("\tend\n\n")
 decoder_f.write("endmodule\n")

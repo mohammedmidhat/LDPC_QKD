@@ -19,9 +19,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 module decoder_2048_1024_sim;
 
-	parameter clk_half_period = 2.5;
+	parameter clk_half_period_pre_div = 2.5;
 	parameter clk_div_factor = 200;
-	parameter sim_half_period = clk_half_period*clk_div_factor;
+	parameter clk_half_period_post_div = clk_half_period_pre_div*clk_div_factor;
 	parameter circ = 128;
 	parameter log2circ = 8;
 	parameter log2max_iter = 5;
@@ -50,11 +50,11 @@ module decoder_2048_1024_sim;
 	);
 
 	always begin
-	#clk_half_period clk_n <= ~clk_n;
+	#clk_half_period_pre_div clk_n <= ~clk_n;
 	end
 
 	always begin
-	#clk_half_period clk_p <= ~clk_p;
+	#clk_half_period_pre_div clk_p <= ~clk_p;
 	end
 
 	initial begin
@@ -64,21 +64,21 @@ module decoder_2048_1024_sim;
 		rst = 0;
 		tog = 0;		// For debugging the simulation
 
-		#(sim_half_period/2)
+		#(clk_half_period_post_div/2)
 		rst = 1;
-		#(60*sim_half_period)
+		#(60*clk_half_period_post_div)
 		rst = 0;
-		#(sim_half_period+(circ+1)*2*sim_half_period)			// 1+(circ+1)*sim_half_period+2*sim_half_period+1
+		#(clk_half_period_post_div+(circ+1)*2*clk_half_period_post_div)			// 1+(circ+1)*clk_half_period_post_div+2*clk_half_period_post_div+1
 		tog = ~tog;
 		if(uut.decoder_inst.FSM == 3)begin
 			$display("already cw");
 		end
 
 		else begin
-			#(2*sim_half_period)
+			#(2*clk_half_period_post_div)
 			for (iter_s = 0; iter_s < max_iter; iter_s = iter_s +1) begin
 				for (circ_iter_s = 0; circ_iter_s < circ; circ_iter_s = circ_iter_s +1) begin
-					#(2*sim_half_period)
+					#(2*clk_half_period_post_div)
 					tog = ~tog;
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_1_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_1_msg_data_in});
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_2_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_2_msg_data_in});
@@ -138,9 +138,9 @@ module decoder_2048_1024_sim;
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_56_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_56_msg_data_in});
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_57_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_57_msg_data_in});
 				end
-				#(2*2*sim_half_period)
+				#(2*2*clk_half_period_post_div)
 				for (circ_iter_s = 0; circ_iter_s < circ; circ_iter_s = circ_iter_s +1) begin
-					#(2*sim_half_period)
+					#(2*clk_half_period_post_div)
 					tog = ~tog;
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_1_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_1_msg_data_in});
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_2_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_2_msg_data_in});
@@ -200,13 +200,14 @@ module decoder_2048_1024_sim;
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_56_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_56_msg_data_in});
 					$display ("%8h", {{(INT+FRAC){uut.decoder_inst.circ_57_msg_data_in[INT+FRAC-1]}},uut.decoder_inst.circ_57_msg_data_in});
 				end
-				#(2*2*sim_half_period)
+				#(2*2*clk_half_period_post_div)
 				tog = tog;
 			end
 
-			#(6*sim_half_period)
+			// so you can manually verify 'success' gets deasserted
+			#(6*clk_half_period_post_div)
 			rst = 1;
-			#(6*sim_half_period)
+			#(6*clk_half_period_post_div)
 			rst = 0;
 		end
 	end
